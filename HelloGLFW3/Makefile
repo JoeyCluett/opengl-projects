@@ -11,3 +11,9 @@ all: main
 
 main: main.cpp
 	$(GXX) $(INC) -o $(BIN)/main main.cpp $(OPTS) $(LIB)
+
+local: main.cpp
+	$(GXX) $(INC) -o main_exec main.cpp $(OPTS) $(LIB)
+
+clean:
+	rm $(BIN)/main
