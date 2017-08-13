@@ -7,13 +7,15 @@
 	<glm/glm.hpp>
 	<GL_Utils/Shader.h>
 
-1502519060 source:/home/joey/github/opengl-projects/HelloGLFW3/main.cpp
+1502589674 source:/home/joey/github/opengl-projects/HelloGLFW3/main.cpp
 	<iostream>
 	<unistd.h>
 	<GL/glew.h>
 	<GLFW/glfw3.h>
+	<IL/il.h>
 	<glm/glm.hpp>
 	<glm/gtc/matrix_transform.hpp>
 	<glm/gtx/transform.hpp>
 	<GL_Utils/Shader.h>
+	<GL_Utils/InitGlfw.h>
 

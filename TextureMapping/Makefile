@@ -1,5 +1,4 @@
-# Makefile for Linux executable
-# HelloGLFW3
+# TextureMapping
 
 GXX  = g++
 INC  = -I$(GITHUB_CUSTOM_LIBS)
