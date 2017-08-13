@@ -3,7 +3,7 @@
 #include <string>
 
 // OpenGL includes
-#include <GL/glew.h> // this needs to be included before glfw3 headers
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #define GLM_FORCE_RADIANS // suppresses a bunch of compiler warnings
