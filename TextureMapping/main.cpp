@@ -1,3 +1,7 @@
+/*
+    TextureMapping proj
+*/
+
 #include <iostream>
 #include <string.h>
 #include <string>
@@ -15,6 +19,7 @@
 #include <GL_Utils/Shader.h>   // Shader objects
 #include <GL_Utils/InitGlfw.h> // GLFW_Init(...)
 #include <GL_Utils/Texture.h>  // Texture objects
+#include <GL_Utils/Camera.h>   // Camera objects
 
 #define ASPECT_RATIO ((float)window_width/(float)window_height)
 
