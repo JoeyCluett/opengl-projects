@@ -46,8 +46,11 @@ int main(int argc, char* argv[]) {
     Util::Shader shader_color(res_loc, "vtx_color.glsl", "frag_color.glsl");
     Util::Shader shader_texture(res_loc, "vtx_texture.glsl", "frag_texture.glsl");
 
-    Util::Texture IMG_plant(img_loc, "shaggy-this-isnt-weed.jpg");
+    //Util::Texture IMG_plant(img_loc, "shaggy-this-isnt-weed.jpg");
+    Util::Texture IMG_plant(img_loc, "is-that-chicken.jpg");
     IMG_plant.bind();
+
+    Util::Texture IMG_grass(img_loc, "grass-1.jpg");
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -55,7 +58,7 @@ int main(int argc, char* argv[]) {
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 
     Util::Camera cam;
-    cam.setLocation(glm::vec3(0.0f, 1.0f, 3.0f));
+    cam.setLocation(glm::vec3(1.0f, 0.0f, 3.0f));
     cam.setLookingAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
     // triangle vertex setup
@@ -77,10 +80,16 @@ int main(int argc, char* argv[]) {
         g_color_buffer_data[i] = randColor(); // fill with new random colors every time
 
     // texture coordinates setup
-    static GLfloat g_uv_buffer_data[6] = {
+    static GLfloat g_uv_buffer_data[12] = {
+        // first triangle
         0.0f, 0.0f,
         1.0f, 0.0f,
-        1.0f, 1.0f
+        1.0f, 1.0f,
+
+        // second triangle
+        0.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0f,
     };
 
     // give various bits of data to OpenGL
@@ -89,7 +98,7 @@ int main(int argc, char* argv[]) {
         // position data
         Util::VertexBufferObject vbo_pos;
         vbo_pos.bind();
-        vbo_pos.bufferData(g_vertex_buffer_data, 9*sizeof(GLfloat));
+        vbo_pos.bufferData(g_vertex_buffer_data, 18*sizeof(GLfloat));
         vbo_pos.setAttribPtrData(0, 3, GL_FLOAT);
 
         // color data
@@ -101,20 +110,15 @@ int main(int argc, char* argv[]) {
         // uv coordinate data
         Util::VertexBufferObject vbo_uv;
         vbo_uv.bind();
-        vbo_uv.bufferData(g_uv_buffer_data, 6*sizeof(GLfloat));
+        vbo_uv.bufferData(g_uv_buffer_data, 12*sizeof(GLfloat));
         vbo_uv.setAttribPtrData(2, 2, GL_FLOAT);
 
     // setup ModelViewProjection matrix
-    glm::mat4 Projection = glm::perspective(glm::radians(30.0f), ASPECT_RATIO, 0.1f, 100.0f);
-    glm::mat4 View = cam.getViewTf(); /*glm::lookAt(
-            glm::vec3(4, 3, 3), // position
-            glm::vec3(0, 0, 0), // looking at
-            glm::vec3(0, 1, 0)  // up
-    );*/
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.1f, 100.0f);
+    glm::mat4 View = cam.getViewTf();
     glm::mat4 Model = glm::mat4(1.0f);
     glm::mat4 mvp = Projection * View * Model; // final MVP matrix
 
-    GLuint MatrixID_color = shader_color.getUniformLocation("MVP");
     GLuint MatrixID       = shader_texture.getUniformLocation("MVP");
     GLuint SamplerID      = shader_texture.getUniformLocation("TEX");
 
@@ -144,7 +148,7 @@ int main(int argc, char* argv[]) {
         vbo_uv.bind();
         vbo_uv.generateAttribPointer();
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         shader_color.bind();
 
