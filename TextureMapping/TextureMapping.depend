@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1502756464 source:/home/joe/Github_Repos/opengl-projects/TextureMapping/main.cpp
+	<iostream>
+	<string.h>
+	<string>
+	<GL/glew.h>
+	<GLFW/glfw3.h>
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<glm/gtx/transform.hpp>
+	<GL_Utils/Shader.h>
+	<GL_Utils/InitGlfw.h>
+	<GL_Utils/Texture.h>
+	<GL_Utils/Camera.h>
+	<GL_Utils/VAO.h>
+	<GL_Utils/VBO.h>
+

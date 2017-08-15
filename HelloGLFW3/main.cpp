@@ -13,7 +13,7 @@
 // CustomLibs
 #include <GL_Utils/ShaderGenerator.h>   // ShaderGenerator::*
 #include <GL_Utils/InitGlfw.h> // GLFW_Init(...)
-#include <GL_Utils/Texture.h>  // TextureLoader::*
+#include <GL_Utils/TextureLoader.h>  // TextureLoader::*
 
 #define ASPECT_RATIO ((float)window_width/(float)window_height)
 
