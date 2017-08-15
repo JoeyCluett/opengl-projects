@@ -1755,9 +1755,11 @@ _ZN13TextureLoader16__texture_handleE:
 	.section	.rodata
 	.align 8
 .LC21:
-	.string	"TextureLoader: DevIL not initialized\n"
+	.string	"Image conversion failed: error("
 .LC22:
-	.string	"\tCall TextureLoader::InitIL\n"
+	.string	") "
+.LC23:
+	.string	"Image load failed: error("
 	.text
 	.align 2
 	.globl	_ZN13TextureLoader4loadESs
@@ -1772,35 +1774,191 @@ _ZN13TextureLoader4loadESs:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	subq	$16, %rsp
-	movq	%rdi, -8(%rbp)
-	.loc 10 35 0
-	movzbl	_ZN13TextureLoader8__initedE(%rip), %eax
-	testb	%al, %al
-	je	.L86
-	.loc 10 36 0
-	movq	-8(%rbp), %rax
+	pushq	%r14
+	pushq	%r13
+	pushq	%r12
+	pushq	%rbx
+	addq	$-128, %rsp
+	.cfi_offset 14, -24
+	.cfi_offset 13, -32
+	.cfi_offset 12, -40
+	.cfi_offset 3, -48
+	movq	%rdi, -136(%rbp)
+.LBB18:
+	.loc 10 44 0
+	leaq	-124(%rbp), %rax
+	movq	%rax, %rsi
+	movl	$1, %edi
+	call	ilGenImages
+	.loc 10 45 0
+	movl	-124(%rbp), %eax
+	movl	%eax, %edi
+	call	ilBindImage
+	.loc 10 46 0
+	movq	-136(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNKSs5c_strEv
 	movq	%rax, %rdi
-	call	ilutGLLoadImage
-	movl	%eax, _ZN13TextureLoader16__texture_handleE(%rip)
-	jmp	.L88
-.L86:
-	.loc 10 38 0
+	call	ilLoadImage
+	movb	%al, -125(%rbp)
+.LBB19:
+	.loc 10 48 0
+	cmpb	$0, -125(%rbp)
+	je	.L86
+.LBB20:
+	.loc 10 50 0
+	leaq	-112(%rbp), %rax
+	movq	%rax, %rdi
+	call	iluGetImageInfo
+	.loc 10 52 0
+	movl	-68(%rbp), %eax
+	cmpl	$1538, %eax
+	jne	.L87
+	.loc 10 53 0
+	call	iluFlipImage
+.L87:
+	.loc 10 55 0
+	movl	$5121, %esi
+	movl	$6407, %edi
+	call	ilConvertImage
+	movb	%al, -125(%rbp)
+.LBB21:
+	.loc 10 57 0
+	cmpb	$0, -125(%rbp)
+	jne	.L88
+.LBB22:
+	.loc 10 58 0
+	call	ilGetError
+	movl	%eax, -120(%rbp)
+	.loc 10 59 0
+	movl	-120(%rbp), %eax
+	movl	%eax, %edi
+	call	iluErrorString
+	movq	%rax, %rbx
 	movl	$.LC21, %esi
-	movl	$_ZSt4cerr, %edi
+	movl	$_ZSt4cout, %edi
 	call	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
-	.loc 10 39 0
+	movl	-120(%rbp), %edx
+	movl	%edx, %esi
+	movq	%rax, %rdi
+	call	_ZNSolsEj
 	movl	$.LC22, %esi
-	movl	$_ZSt4cerr, %edi
+	movq	%rax, %rdi
 	call	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
-	.loc 10 40 0
+	movq	%rbx, %rsi
+	movq	%rax, %rdi
+	call	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+	movl	$_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_, %esi
+	movq	%rax, %rdi
+	call	_ZNSolsEPFRSoS_E
+	.loc 10 60 0
 	movl	$-1, %edi
 	call	exit
 .L88:
-	.loc 10 42 0
-	leave
+.LBE22:
+.LBE21:
+	.loc 10 63 0
+	movl	$_ZN13TextureLoader16__texture_handleE, %esi
+	movl	$1, %edi
+	call	glGenTextures
+	.loc 10 64 0
+	movl	_ZN13TextureLoader16__texture_handleE(%rip), %eax
+	movl	%eax, %esi
+	movl	$3553, %edi
+	call	glBindTexture
+	.loc 10 67 0
+	movl	$10496, %edx
+	movl	$10242, %esi
+	movl	$3553, %edi
+	call	glTexParameteri
+	.loc 10 68 0
+	movl	$10496, %edx
+	movl	$10243, %esi
+	movl	$3553, %edi
+	call	glTexParameteri
+	.loc 10 71 0
+	movl	$9729, %edx
+	movl	$10240, %esi
+	movl	$3553, %edi
+	call	glTexParameteri
+	.loc 10 72 0
+	movl	$9729, %edx
+	movl	$10241, %esi
+	movl	$3553, %edi
+	call	glTexParameteri
+	.loc 10 83 0
+	call	ilGetData
+	movq	%rax, %rbx
+	.loc 10 81 0
+	movl	$3562, %edi
+	call	ilGetInteger
+	.loc 10 84 0
+	movl	%eax, %r14d
+	movl	$3557, %edi
+	call	ilGetInteger
+	movl	%eax, %r13d
+	movl	$3556, %edi
+	call	ilGetInteger
+	movl	%eax, %r12d
+	movl	$3562, %edi
+	call	ilGetInteger
+	movq	%rbx, 16(%rsp)
+	movl	$5121, 8(%rsp)
+	movl	%r14d, (%rsp)
+	movl	$0, %r9d
+	movl	%r13d, %r8d
+	movl	%r12d, %ecx
+	movl	%eax, %edx
+	movl	$0, %esi
+	movl	$3553, %edi
+	call	glTexImage2D
+.LBE20:
+	jmp	.L90
+.L86:
+.LBB23:
+	.loc 10 87 0
+	call	ilGetError
+	movl	%eax, -116(%rbp)
+	.loc 10 88 0
+	movl	-116(%rbp), %eax
+	movl	%eax, %edi
+	call	iluErrorString
+	movq	%rax, %rbx
+	movl	$.LC23, %esi
+	movl	$_ZSt4cout, %edi
+	call	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+	movl	-116(%rbp), %edx
+	movl	%edx, %esi
+	movq	%rax, %rdi
+	call	_ZNSolsEj
+	movl	$.LC22, %esi
+	movq	%rax, %rdi
+	call	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+	movq	%rbx, %rsi
+	movq	%rax, %rdi
+	call	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+	movl	$_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_, %esi
+	movq	%rax, %rdi
+	call	_ZNSolsEPFRSoS_E
+	.loc 10 89 0
+	movl	$-1, %edi
+	call	exit
+.L90:
+.LBE23:
+.LBE19:
+	.loc 10 92 0
+	leaq	-124(%rbp), %rax
+	movq	%rax, %rsi
+	movl	$1, %edi
+	call	ilDeleteImages
+.LBE18:
+	.loc 10 93 0
+	subq	$-128, %rsp
+	popq	%rbx
+	popq	%r12
+	popq	%r13
+	popq	%r14
+	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
@@ -1811,25 +1969,25 @@ _ZN13TextureLoader4loadESs:
 	.type	_ZN13TextureLoader6InitILEv, @function
 _ZN13TextureLoader6InitILEv:
 .LFB3347:
-	.loc 10 44 0
+	.loc 10 95 0
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	.loc 10 46 0
+	.loc 10 97 0
 	call	ilInit
-	.loc 10 47 0
+	.loc 10 98 0
 	call	iluInit
-	.loc 10 48 0
+	.loc 10 99 0
 	call	ilutInit
-	.loc 10 49 0
+	.loc 10 100 0
 	movl	$0, %edi
 	call	ilutRenderer
-	.loc 10 50 0
+	.loc 10 101 0
 	movb	$1, _ZN13TextureLoader8__initedE(%rip)
-	.loc 10 51 0
+	.loc 10 102 0
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
@@ -1841,16 +1999,16 @@ _ZN13TextureLoader6InitILEv:
 	.type	_ZN13TextureLoader12getTextureIDEv, @function
 _ZN13TextureLoader12getTextureIDEv:
 .LFB3348:
-	.loc 10 53 0
+	.loc 10 104 0
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	.loc 10 54 0
+	.loc 10 105 0
 	movl	_ZN13TextureLoader16__texture_handleE(%rip), %eax
-	.loc 10 55 0
+	.loc 10 106 0
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
@@ -1877,7 +2035,7 @@ _ZN4Util7TextureC2ESs:
 	.cfi_offset 3, -24
 	movq	%rdi, -40(%rbp)
 	movq	%rsi, -48(%rbp)
-.LBB18:
+.LBB24:
 	.loc 11 32 0
 	movq	-48(%rbp), %rdx
 	leaq	-32(%rbp), %rax
@@ -1899,8 +2057,8 @@ _ZN4Util7TextureC2ESs:
 	call	_ZN13TextureLoader12getTextureIDEv
 	movq	-40(%rbp), %rdx
 	movl	%eax, (%rdx)
-	jmp	.L95
-.L94:
+	jmp	.L97
+.L96:
 	movq	%rax, %rbx
 	.loc 11 32 0
 	leaq	-32(%rbp), %rax
@@ -1911,8 +2069,8 @@ _ZN4Util7TextureC2ESs:
 .LEHB31:
 	call	_Unwind_Resume
 .LEHE31:
-.L95:
-.LBE18:
+.L97:
+.LBE24:
 	.loc 11 34 0
 	addq	$40, %rsp
 	popq	%rbx
@@ -1934,7 +2092,7 @@ _ZN4Util7TextureC2ESs:
 	.uleb128 0
 	.uleb128 .LEHB30-.LFB3351
 	.uleb128 .LEHE30-.LEHB30
-	.uleb128 .L94-.LFB3351
+	.uleb128 .L96-.LFB3351
 	.uleb128 0
 	.uleb128 .LEHB31-.LFB3351
 	.uleb128 .LEHE31-.LEHB31
@@ -1965,7 +2123,7 @@ _ZN4Util7TextureC2ESsSs:
 	movq	%rdi, -40(%rbp)
 	movq	%rsi, -48(%rbp)
 	movq	%rdx, -56(%rbp)
-.LBB19:
+.LBB25:
 	.loc 11 37 0
 	leaq	-32(%rbp), %rax
 	movq	-56(%rbp), %rdx
@@ -1988,8 +2146,8 @@ _ZN4Util7TextureC2ESsSs:
 	call	_ZN13TextureLoader12getTextureIDEv
 	movq	-40(%rbp), %rdx
 	movl	%eax, (%rdx)
-	jmp	.L99
-.L98:
+	jmp	.L101
+.L100:
 	movq	%rax, %rbx
 	.loc 11 37 0
 	leaq	-32(%rbp), %rax
@@ -2000,8 +2158,8 @@ _ZN4Util7TextureC2ESsSs:
 .LEHB34:
 	call	_Unwind_Resume
 .LEHE34:
-.L99:
-.LBE19:
+.L101:
+.LBE25:
 	.loc 11 39 0
 	addq	$56, %rsp
 	popq	%rbx
@@ -2023,7 +2181,7 @@ _ZN4Util7TextureC2ESsSs:
 	.uleb128 0
 	.uleb128 .LEHB33-.LFB3354
 	.uleb128 .LEHE33-.LEHB33
-	.uleb128 .L98-.LFB3354
+	.uleb128 .L100-.LFB3354
 	.uleb128 0
 	.uleb128 .LEHB34-.LFB3354
 	.uleb128 .LEHE34-.LEHB34
@@ -2076,7 +2234,7 @@ _ZN4Util6CameraC2Ev:
 	.cfi_def_cfa_register 6
 	subq	$48, %rsp
 	movq	%rdi, -40(%rbp)
-.LBB20:
+.LBB26:
 	.loc 12 37 0
 	movq	-40(%rbp), %rax
 	movq	%rax, %rdi
@@ -2105,7 +2263,7 @@ _ZN4Util6CameraC2Ev:
 	movq	%rax, %rsi
 	movq	%rdx, %rdi
 	call	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEaSERKS3_
-.LBE20:
+.LBE26:
 	.loc 12 39 0
 	leave
 	.cfi_def_cfa 7, 8
@@ -2248,7 +2406,7 @@ _ZN4Util17VertexArrayObjectC2Ev:
 	.cfi_def_cfa_register 6
 	subq	$16, %rsp
 	movq	%rdi, -8(%rbp)
-.LBB21:
+.LBB27:
 	.loc 13 29 0
 	movq	-8(%rbp), %rax
 	movl	$0, (%rax)
@@ -2258,7 +2416,7 @@ _ZN4Util17VertexArrayObjectC2Ev:
 	movq	%rdx, %rsi
 	movl	$1, %edi
 	call	*%rax
-.LBE21:
+.LBE27:
 	.loc 13 31 0
 	leave
 	.cfi_def_cfa 7, 8
@@ -2364,7 +2522,7 @@ _ZN4Util18VertexBufferObjectC2Ev:
 	.cfi_def_cfa_register 6
 	subq	$16, %rsp
 	movq	%rdi, -8(%rbp)
-.LBB22:
+.LBB28:
 	.loc 14 45 0
 	movq	-8(%rbp), %rax
 	movl	$0, (%rax)
@@ -2376,7 +2534,7 @@ _ZN4Util18VertexBufferObjectC2Ev:
 	movq	%rdx, %rsi
 	movl	$1, %edi
 	call	*%rax
-.LBE22:
+.LBE28:
 	.loc 14 47 0
 	leave
 	.cfi_def_cfa 7, 8
@@ -2522,22 +2680,22 @@ _ZN4Util18VertexBufferObject21generateAttribPointerEv:
 .LFE3377:
 	.size	_ZN4Util18VertexBufferObject21generateAttribPointerEv, .-_ZN4Util18VertexBufferObject21generateAttribPointerEv
 	.section	.rodata
-.LC23:
-	.string	"TextureMapping"
 .LC24:
-	.string	"../assets/shader/"
+	.string	"TextureMapping"
 .LC25:
-	.string	"../assets/img/"
+	.string	"../assets/shader/"
 .LC26:
-	.string	"frag_color.glsl"
+	.string	"../assets/img/"
 .LC27:
-	.string	"vtx_color.glsl"
+	.string	"frag_color.glsl"
 .LC28:
-	.string	"frag_texture.glsl"
+	.string	"vtx_color.glsl"
 .LC29:
-	.string	"vtx_texture.glsl"
+	.string	"frag_texture.glsl"
 .LC30:
-	.string	"shaggy.bmp"
+	.string	"vtx_texture.glsl"
+.LC31:
+	.string	"shaggy-this-isnt-weed.jpg"
 .LC39:
 	.string	"MVP"
 .LC40:
@@ -2562,14 +2720,14 @@ main:
 	.cfi_offset 3, -24
 	movl	%edi, -724(%rbp)
 	movq	%rsi, -736(%rbp)
-.LBB23:
+.LBB29:
 	.loc 15 35 0
 	leaq	-144(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcEC1Ev
 	leaq	-144(%rbp), %rdx
 	leaq	-80(%rbp), %rax
-	movl	$.LC23, %esi
+	movl	$.LC24, %esi
 	movq	%rax, %rdi
 .LEHB35:
 	call	_ZNSsC1EPKcRKSaIcE
@@ -2614,7 +2772,7 @@ main:
 	call	_ZNSaIcEC1Ev
 	leaq	-80(%rbp), %rdx
 	leaq	-688(%rbp), %rax
-	movl	$.LC24, %esi
+	movl	$.LC25, %esi
 	movq	%rax, %rdi
 .LEHB38:
 	call	_ZNSsC1EPKcRKSaIcE
@@ -2628,7 +2786,7 @@ main:
 	call	_ZNSaIcEC1Ev
 	leaq	-80(%rbp), %rdx
 	leaq	-672(%rbp), %rax
-	movl	$.LC25, %esi
+	movl	$.LC26, %esi
 	movq	%rax, %rdi
 .LEHB39:
 	call	_ZNSsC1EPKcRKSaIcE
@@ -2642,7 +2800,7 @@ main:
 	call	_ZNSaIcEC1Ev
 	leaq	-80(%rbp), %rdx
 	leaq	-624(%rbp), %rax
-	movl	$.LC26, %esi
+	movl	$.LC27, %esi
 	movq	%rax, %rdi
 .LEHB40:
 	call	_ZNSsC1EPKcRKSaIcE
@@ -2652,7 +2810,7 @@ main:
 	call	_ZNSaIcEC1Ev
 	leaq	-144(%rbp), %rdx
 	leaq	-640(%rbp), %rax
-	movl	$.LC27, %esi
+	movl	$.LC28, %esi
 	movq	%rax, %rdi
 .LEHB41:
 	call	_ZNSsC1EPKcRKSaIcE
@@ -2696,7 +2854,7 @@ main:
 	call	_ZNSaIcEC1Ev
 	leaq	-80(%rbp), %rdx
 	leaq	-576(%rbp), %rax
-	movl	$.LC28, %esi
+	movl	$.LC29, %esi
 	movq	%rax, %rdi
 .LEHB44:
 	call	_ZNSsC1EPKcRKSaIcE
@@ -2707,7 +2865,7 @@ main:
 	call	_ZNSaIcEC1Ev
 	leaq	-144(%rbp), %rdx
 	leaq	-592(%rbp), %rax
-	movl	$.LC29, %esi
+	movl	$.LC30, %esi
 	movq	%rax, %rdi
 .LEHB45:
 	call	_ZNSsC1EPKcRKSaIcE
@@ -2751,7 +2909,7 @@ main:
 	call	_ZNSaIcEC1Ev
 	leaq	-80(%rbp), %rdx
 	leaq	-544(%rbp), %rax
-	movl	$.LC30, %esi
+	movl	$.LC31, %esi
 	movq	%rax, %rdi
 .LEHB48:
 	call	_ZNSsC1EPKcRKSaIcE
@@ -2789,12 +2947,12 @@ main:
 .LEHB51:
 	call	_ZN4Util7Texture4bindEv
 	.loc 15 52 0
-	movss	.LC31(%rip), %xmm0
+	movss	.LC32(%rip), %xmm0
 	movl	$10241, %esi
 	movl	$3553, %edi
 	call	glTexParameterf
 	.loc 15 53 0
-	movss	.LC31(%rip), %xmm0
+	movss	.LC32(%rip), %xmm0
 	movl	$10240, %esi
 	movl	$3553, %edi
 	call	glTexParameterf
@@ -2813,11 +2971,11 @@ main:
 	movq	%rax, %rdi
 	call	_ZN4Util6CameraC1Ev
 	.loc 15 58 0
-	movl	.LC0(%rip), %eax
-	movl	%eax, -144(%rbp)
-	movl	.LC32(%rip), %eax
-	movl	%eax, -208(%rbp)
 	movl	.LC33(%rip), %eax
+	movl	%eax, -144(%rbp)
+	movl	.LC0(%rip), %eax
+	movl	%eax, -208(%rbp)
+	movl	.LC34(%rip), %eax
 	movl	%eax, -272(%rbp)
 	leaq	-144(%rbp), %rcx
 	leaq	-208(%rbp), %rdx
@@ -2848,11 +3006,11 @@ main:
 	movq	%rdx, %rsi
 	movq	%rax, %rdi
 	call	_ZN4Util6Camera12setLookingAtEN3glm6detail5tvec3IfLNS1_9precisionE0EEE
-.LBB24:
+.LBB30:
 	.loc 15 70 0
 	movl	$0, -700(%rbp)
-	jmp	.L117
-.L118:
+	jmp	.L119
+.L120:
 	.loc 15 71 0 discriminator 2
 	call	_Z9randColorv
 	movss	%xmm0, -728(%rbp)
@@ -2862,11 +3020,11 @@ main:
 	movl	%eax, _ZZ4mainE19g_color_buffer_data(,%rdx,4)
 	.loc 15 70 0 discriminator 2
 	addl	$1, -700(%rbp)
-.L117:
+.L119:
 	.loc 15 70 0 is_stmt 0 discriminator 1
 	cmpl	$8, -700(%rbp)
-	jle	.L118
-.LBE24:
+	jle	.L120
+.LBE30:
 	.loc 15 81 0 is_stmt 1
 	leaq	-704(%rbp), %rax
 	movq	%rax, %rdi
@@ -3055,7 +3213,7 @@ main:
 	leaq	-528(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
-.L121:
+.L123:
 	.loc 15 116 0
 	movl	$16640, %edi
 .LEHB56:
@@ -3170,24 +3328,24 @@ main:
 	movq	%rax, %rdi
 	call	glfwGetKey
 	cmpl	$1, %eax
-	je	.L119
+	je	.L121
 	.loc 15 152 0
 	movq	-520(%rbp), %rax
 	movq	%rax, %rdi
 	call	glfwWindowShouldClose
 	.loc 15 151 0
 	testl	%eax, %eax
-	jne	.L119
+	jne	.L121
 	.loc 15 151 0 is_stmt 0 discriminator 2
 	movl	$1, %eax
-	jmp	.L120
-.L119:
+	jmp	.L122
+.L121:
 	.loc 15 151 0 discriminator 1
 	movl	$0, %eax
-.L120:
+.L122:
 	.loc 15 115 0 is_stmt 1
 	testb	%al, %al
-	jne	.L121
+	jne	.L123
 	.loc 15 154 0
 	call	glfwTerminate
 .LEHE56:
@@ -3202,17 +3360,17 @@ main:
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
 	movl	%ebx, %eax
-	jmp	.L164
-.L145:
+	jmp	.L166
+.L147:
 	movq	%rax, %rbx
 	.loc 15 35 0
 	leaq	-80(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L124
-.L144:
+	jmp	.L126
+.L146:
 	movq	%rax, %rbx
-.L124:
+.L126:
 	leaq	-144(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
@@ -3220,7 +3378,7 @@ main:
 	movq	%rax, %rdi
 .LEHB57:
 	call	_Unwind_Resume
-.L146:
+.L148:
 	movq	%rax, %rbx
 	leaq	-80(%rbp), %rax
 	movq	%rax, %rdi
@@ -3228,131 +3386,131 @@ main:
 	movq	%rbx, %rax
 	movq	%rax, %rdi
 	call	_Unwind_Resume
-.L147:
+.L149:
 	movq	%rax, %rbx
 	leaq	-80(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
-	jmp	.L127
-.L151:
+	jmp	.L129
+.L153:
 	movq	%rax, %rbx
 	.loc 15 46 0
 	leaq	-656(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L129
-.L150:
+	jmp	.L131
+.L152:
 	movq	%rax, %rbx
-.L129:
+.L131:
 	leaq	-640(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L130
-.L149:
+	jmp	.L132
+.L151:
 	movq	%rax, %rbx
-.L130:
+.L132:
 	leaq	-144(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
 	leaq	-624(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L131
-.L148:
+	jmp	.L133
+.L150:
 	movq	%rax, %rbx
-.L131:
+.L133:
 	leaq	-80(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
-	jmp	.L132
-.L156:
+	jmp	.L134
+.L158:
 	movq	%rax, %rbx
 	.loc 15 47 0
 	leaq	-608(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L134
-.L155:
+	jmp	.L136
+.L157:
 	movq	%rax, %rbx
-.L134:
+.L136:
 	leaq	-592(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L135
-.L154:
+	jmp	.L137
+.L156:
 	movq	%rax, %rbx
-.L135:
+.L137:
 	leaq	-144(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
 	leaq	-576(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L136
-.L153:
+	jmp	.L138
+.L155:
 	movq	%rax, %rbx
-.L136:
+.L138:
 	leaq	-80(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
-	jmp	.L132
-.L159:
+	jmp	.L134
+.L161:
 	movq	%rax, %rbx
 	.loc 15 49 0
 	leaq	-560(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L138
-.L158:
+	jmp	.L140
+.L160:
 	movq	%rax, %rbx
-.L138:
+.L140:
 	leaq	-544(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-	jmp	.L139
-.L157:
-	movq	%rax, %rbx
-.L139:
-	leaq	-80(%rbp), %rax
-	movq	%rax, %rdi
-	call	_ZNSaIcED1Ev
-	jmp	.L132
-.L161:
-	movq	%rax, %rbx
-	.loc 15 112 0
-	leaq	-528(%rbp), %rax
-	movq	%rax, %rdi
-	call	_ZNSsD1Ev
 	jmp	.L141
-.L160:
+.L159:
 	movq	%rax, %rbx
 .L141:
 	leaq	-80(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
-	jmp	.L132
+	jmp	.L134
 .L163:
 	movq	%rax, %rbx
-	.loc 15 113 0
-	leaq	-80(%rbp), %rax
+	.loc 15 112 0
+	leaq	-528(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
 	jmp	.L143
 .L162:
 	movq	%rax, %rbx
 .L143:
+	leaq	-80(%rbp), %rax
+	movq	%rax, %rdi
+	call	_ZNSaIcED1Ev
+	jmp	.L134
+.L165:
+	movq	%rax, %rbx
+	.loc 15 113 0
+	leaq	-80(%rbp), %rax
+	movq	%rax, %rdi
+	call	_ZNSsD1Ev
+	jmp	.L145
+.L164:
+	movq	%rax, %rbx
+.L145:
 	leaq	-528(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSaIcED1Ev
-	jmp	.L132
-.L152:
+	jmp	.L134
+.L154:
 	movq	%rax, %rbx
-.L132:
+.L134:
 	.loc 15 44 0
 	leaq	-672(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNSsD1Ev
-.L127:
+.L129:
 	.loc 15 155 0
 	leaq	-688(%rbp), %rax
 	movq	%rax, %rdi
@@ -3361,8 +3519,8 @@ main:
 	movq	%rax, %rdi
 	call	_Unwind_Resume
 .LEHE57:
-.L164:
-.LBE23:
+.L166:
+.LBE29:
 	.loc 15 156 0
 	addq	$728, %rsp
 	popq	%rbx
@@ -3380,11 +3538,11 @@ main:
 .LLSDACSB3378:
 	.uleb128 .LEHB35-.LFB3378
 	.uleb128 .LEHE35-.LEHB35
-	.uleb128 .L144-.LFB3378
+	.uleb128 .L146-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB36-.LFB3378
 	.uleb128 .LEHE36-.LEHB36
-	.uleb128 .L145-.LFB3378
+	.uleb128 .L147-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB37-.LFB3378
 	.uleb128 .LEHE37-.LEHB37
@@ -3392,79 +3550,79 @@ main:
 	.uleb128 0
 	.uleb128 .LEHB38-.LFB3378
 	.uleb128 .LEHE38-.LEHB38
-	.uleb128 .L146-.LFB3378
+	.uleb128 .L148-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB39-.LFB3378
 	.uleb128 .LEHE39-.LEHB39
-	.uleb128 .L147-.LFB3378
+	.uleb128 .L149-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB40-.LFB3378
 	.uleb128 .LEHE40-.LEHB40
-	.uleb128 .L148-.LFB3378
+	.uleb128 .L150-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB41-.LFB3378
 	.uleb128 .LEHE41-.LEHB41
-	.uleb128 .L149-.LFB3378
+	.uleb128 .L151-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB42-.LFB3378
 	.uleb128 .LEHE42-.LEHB42
-	.uleb128 .L150-.LFB3378
+	.uleb128 .L152-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB43-.LFB3378
 	.uleb128 .LEHE43-.LEHB43
-	.uleb128 .L151-.LFB3378
+	.uleb128 .L153-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB44-.LFB3378
 	.uleb128 .LEHE44-.LEHB44
-	.uleb128 .L153-.LFB3378
+	.uleb128 .L155-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB45-.LFB3378
 	.uleb128 .LEHE45-.LEHB45
-	.uleb128 .L154-.LFB3378
+	.uleb128 .L156-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB46-.LFB3378
 	.uleb128 .LEHE46-.LEHB46
-	.uleb128 .L155-.LFB3378
+	.uleb128 .L157-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB47-.LFB3378
 	.uleb128 .LEHE47-.LEHB47
-	.uleb128 .L156-.LFB3378
+	.uleb128 .L158-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB48-.LFB3378
 	.uleb128 .LEHE48-.LEHB48
-	.uleb128 .L157-.LFB3378
+	.uleb128 .L159-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB49-.LFB3378
 	.uleb128 .LEHE49-.LEHB49
-	.uleb128 .L158-.LFB3378
+	.uleb128 .L160-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB50-.LFB3378
 	.uleb128 .LEHE50-.LEHB50
-	.uleb128 .L159-.LFB3378
+	.uleb128 .L161-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB51-.LFB3378
 	.uleb128 .LEHE51-.LEHB51
-	.uleb128 .L152-.LFB3378
+	.uleb128 .L154-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB52-.LFB3378
 	.uleb128 .LEHE52-.LEHB52
-	.uleb128 .L160-.LFB3378
+	.uleb128 .L162-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB53-.LFB3378
 	.uleb128 .LEHE53-.LEHB53
-	.uleb128 .L161-.LFB3378
+	.uleb128 .L163-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB54-.LFB3378
 	.uleb128 .LEHE54-.LEHB54
-	.uleb128 .L162-.LFB3378
+	.uleb128 .L164-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB55-.LFB3378
 	.uleb128 .LEHE55-.LEHB55
-	.uleb128 .L163-.LFB3378
+	.uleb128 .L165-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB56-.LFB3378
 	.uleb128 .LEHE56-.LEHB56
-	.uleb128 .L152-.LFB3378
+	.uleb128 .L154-.LFB3378
 	.uleb128 0
 	.uleb128 .LEHB57-.LFB3378
 	.uleb128 .LEHE57-.LEHB57
@@ -3493,20 +3651,20 @@ _ZN3glm4sqrtIfEET_RKS1_:
 	.cfi_def_cfa_register 6
 	subq	$16, %rsp
 	movq	%rdi, -8(%rbp)
-.LBB25:
+.LBB31:
 	.loc 3 149 0
 	movq	-8(%rbp), %rax
 	movss	(%rax), %xmm0
 	xorps	%xmm1, %xmm1
 	ucomiss	%xmm1, %xmm0
-	jnb	.L166
+	jnb	.L168
 	.loc 3 149 0 is_stmt 0 discriminator 1
 	movl	$_ZZN3glm4sqrtIfEET_RKS1_E19__PRETTY_FUNCTION__, %ecx
 	movl	$149, %edx
 	movl	$.LC41, %esi
 	movl	$.LC42, %edi
 	call	__assert_fail
-.L166:
+.L168:
 	.loc 3 151 0 is_stmt 1
 	movq	-8(%rbp), %rax
 	movl	(%rax), %eax
@@ -3515,7 +3673,7 @@ _ZN3glm4sqrtIfEET_RKS1_:
 	call	_ZSt4sqrtf
 	movss	%xmm0, -12(%rbp)
 	movl	-12(%rbp), %eax
-.LBE25:
+.LBE31:
 	.loc 3 152 0
 	movl	%eax, -12(%rbp)
 	movss	-12(%rbp), %xmm0
@@ -3598,7 +3756,7 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKS3_:
 	.cfi_def_cfa_register 6
 	movq	%rdi, -8(%rbp)
 	movq	%rsi, -16(%rbp)
-.LBB26:
+.LBB32:
 	.loc 16 71 0
 	movq	-16(%rbp), %rax
 	movl	(%rax), %eax
@@ -3616,7 +3774,7 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKS3_:
 	movl	12(%rax), %eax
 	movq	-8(%rbp), %rdx
 	movl	%eax, 12(%rdx)
-.LBE26:
+.LBE32:
 	.loc 16 72 0
 	popq	%rbp
 	.cfi_def_cfa 7, 8
@@ -3647,7 +3805,7 @@ _ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_ERKS6_S8_:
 	movq	%rdi, -24(%rbp)
 	movq	%rsi, -32(%rbp)
 	movq	%rdx, -40(%rbp)
-.LBB27:
+.LBB33:
 	.loc 17 2368 0
 	movq	-32(%rbp), %rdx
 	movq	-24(%rbp), %rax
@@ -3665,8 +3823,8 @@ _ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_ERKS6_S8_:
 	call	_ZNSs6appendERKSs
 .LEHE59:
 	.loc 17 2370 0
-	jmp	.L175
-.L174:
+	jmp	.L177
+.L176:
 	movq	%rax, %rbx
 	movq	-24(%rbp), %rax
 	movq	%rax, %rdi
@@ -3676,8 +3834,8 @@ _ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_ERKS6_S8_:
 .LEHB60:
 	call	_Unwind_Resume
 .LEHE60:
-.L175:
-.LBE27:
+.L177:
+.LBE33:
 	.loc 17 2371 0
 	movq	-24(%rbp), %rax
 	addq	$40, %rsp
@@ -3700,7 +3858,7 @@ _ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_ERKS6_S8_:
 	.uleb128 0
 	.uleb128 .LEHB59-.LFB3537
 	.uleb128 .LEHE59-.LEHB59
-	.uleb128 .L174-.LFB3537
+	.uleb128 .L176-.LFB3537
 	.uleb128 0
 	.uleb128 .LEHB60-.LFB3537
 	.uleb128 .LEHE60-.LEHB60
@@ -3714,7 +3872,7 @@ _ZStplIcSt11char_traitsIcESaIcEESbIT_T0_T1_ERKS6_S8_:
 	.weak	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev
 	.type	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev, @function
 _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev:
-.LFB3545:
+.LFB3546:
 	.file 18 "/usr/include/glm/detail/type_vec3.inl"
 	.loc 18 59 0
 	.cfi_startproc
@@ -3724,7 +3882,7 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	movq	%rdi, -8(%rbp)
-.LBB28:
+.LBB34:
 	.loc 18 62 0
 	movq	-8(%rbp), %rdx
 	movl	.LC34(%rip), %eax
@@ -3735,13 +3893,13 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev:
 	movq	-8(%rbp), %rdx
 	movl	.LC34(%rip), %eax
 	movl	%eax, 8(%rdx)
-.LBE28:
+.LBE34:
 	.loc 18 63 0
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3545:
+.LFE3546:
 	.size	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev, .-_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev
 	.weak	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC1Ev
 	.set	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC1Ev,_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev
@@ -3750,7 +3908,7 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev:
 	.weak	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_
 	.type	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_, @function
 _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_:
-.LFB3548:
+.LFB3549:
 	.loc 18 123 0
 	.cfi_startproc
 	pushq	%rbp
@@ -3762,7 +3920,7 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_:
 	movq	%rsi, -16(%rbp)
 	movq	%rdx, -24(%rbp)
 	movq	%rcx, -32(%rbp)
-.LBB29:
+.LBB35:
 	.loc 18 131 0
 	movq	-16(%rbp), %rax
 	movl	(%rax), %eax
@@ -3779,13 +3937,13 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_:
 	cvtsi2ss	%eax, %xmm0
 	movq	-8(%rbp), %rax
 	movss	%xmm0, 8(%rax)
-.LBE29:
+.LBE35:
 	.loc 18 132 0
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3548:
+.LFE3549:
 	.size	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_, .-_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_
 	.weak	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC1IiiiEERKT_RKT0_RKT1_
 	.set	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC1IiiiEERKT_RKT0_RKT1_,_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_
@@ -3794,7 +3952,7 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_:
 	.weak	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEaSERKS3_
 	.type	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEaSERKS3_, @function
 _ZN3glm6detail5tvec3IfLNS_9precisionE0EEaSERKS3_:
-.LFB3550:
+.LFB3551:
 	.loc 18 187 0
 	.cfi_startproc
 	pushq	%rbp
@@ -3826,13 +3984,13 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEaSERKS3_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3550:
+.LFE3551:
 	.size	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEaSERKS3_, .-_ZN3glm6detail5tvec3IfLNS_9precisionE0EEaSERKS3_
 	.section	.text._ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_XT0_EEES9_S9_,"axG",@progbits,_ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_XT0_EEES9_S9_,comdat
 	.weak	_ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_XT0_EEES9_S9_
 	.type	_ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_XT0_EEES9_S9_, @function
 _ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_XT0_EEES9_S9_:
-.LFB3551:
+.LFB3552:
 	.file 19 "/usr/include/glm/gtc/matrix_transform.inl"
 	.loc 19 424 0
 	.cfi_startproc
@@ -3848,7 +4006,7 @@ _ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_X
 	movq	%rsi, -96(%rbp)
 	movq	%rdx, -104(%rbp)
 	movq	%rcx, -112(%rbp)
-.LBB30:
+.LBB36:
 	.loc 19 431 0
 	leaq	-32(%rbp), %rax
 	movq	-96(%rbp), %rdx
@@ -4043,7 +4201,7 @@ _ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_X
 	movl	%eax, (%rbx)
 	.loc 19 448 0
 	nop
-.LBE30:
+.LBE36:
 	.loc 19 449 0
 	movq	-88(%rbp), %rax
 	addq	$120, %rsp
@@ -4052,14 +4210,14 @@ _ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_X
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3551:
+.LFE3552:
 	.size	_ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_XT0_EEES9_S9_, .-_ZN3glm6lookAtIfLNS_9precisionE0EEENS_6detail7tmat4x4IT_XT0_EEERKNS2_5tvec3IS4_XT0_EEES9_S9_
 	.section	.text._ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_,"axG",@progbits,_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC5ERKfS5_S5_,comdat
 	.align 2
 	.weak	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_
 	.type	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_, @function
 _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_:
-.LFB3556:
+.LFB3557:
 	.loc 18 107 0
 	.cfi_startproc
 	pushq	%rbp
@@ -4071,7 +4229,7 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_:
 	movq	%rsi, -16(%rbp)
 	movq	%rdx, -24(%rbp)
 	movq	%rcx, -32(%rbp)
-.LBB31:
+.LBB37:
 	.loc 18 115 0
 	movq	-16(%rbp), %rax
 	movl	(%rax), %eax
@@ -4085,13 +4243,13 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_:
 	movl	(%rax), %eax
 	movq	-8(%rbp), %rdx
 	movl	%eax, 8(%rdx)
-.LBE31:
+.LBE37:
 	.loc 18 116 0
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3556:
+.LFE3557:
 	.size	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_, .-_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_
 	.weak	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC1ERKfS5_S5_
 	.set	_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC1ERKfS5_S5_,_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_
@@ -4099,7 +4257,7 @@ _ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_:
 	.weak	_ZN3glm7radiansIfEET_RKS1_
 	.type	_ZN3glm7radiansIfEET_RKS1_, @function
 _ZN3glm7radiansIfEET_RKS1_:
-.LFB3561:
+.LFB3562:
 	.file 20 "/usr/include/glm/detail/func_trigonometric.inl"
 	.loc 20 37 0
 	.cfi_startproc
@@ -4123,7 +4281,7 @@ _ZN3glm7radiansIfEET_RKS1_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3561:
+.LFE3562:
 	.size	_ZN3glm7radiansIfEET_RKS1_, .-_ZN3glm7radiansIfEET_RKS1_
 	.section	.rodata
 	.align 8
@@ -4137,7 +4295,7 @@ _ZN3glm7radiansIfEET_RKS1_:
 	.weak	_ZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_
 	.type	_ZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_, @function
 _ZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_:
-.LFB3562:
+.LFB3563:
 	.loc 19 239 0
 	.cfi_startproc
 	pushq	%rbp
@@ -4151,39 +4309,39 @@ _ZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_:
 	movq	%rdx, -40(%rbp)
 	movq	%rcx, -48(%rbp)
 	movq	%r8, -56(%rbp)
-.LBB32:
+.LBB38:
 	.loc 19 247 0
 	movq	-40(%rbp), %rax
 	movss	(%rax), %xmm0
 	xorps	%xmm1, %xmm1
 	ucomiss	%xmm1, %xmm0
-	jp	.L186
+	jp	.L188
 	xorps	%xmm1, %xmm1
 	ucomiss	%xmm1, %xmm0
-	jne	.L186
+	jne	.L188
 	.loc 19 247 0 is_stmt 0 discriminator 1
 	movl	$_ZZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_E19__PRETTY_FUNCTION__, %ecx
 	movl	$247, %edx
 	movl	$.LC45, %esi
 	movl	$.LC46, %edi
 	call	__assert_fail
-.L186:
+.L188:
 	.loc 19 248 0 is_stmt 1
 	movq	-56(%rbp), %rax
 	movss	(%rax), %xmm0
 	movq	-48(%rbp), %rax
 	movss	(%rax), %xmm1
 	ucomiss	%xmm1, %xmm0
-	jp	.L188
+	jp	.L190
 	ucomiss	%xmm1, %xmm0
-	jne	.L188
+	jne	.L190
 	.loc 19 248 0 is_stmt 0 discriminator 1
 	movl	$_ZZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_E19__PRETTY_FUNCTION__, %ecx
 	movl	$248, %edx
 	movl	$.LC45, %esi
 	movl	$.LC47, %edi
 	call	__assert_fail
-.L188:
+.L190:
 	.loc 19 251 0 is_stmt 1
 	movq	-32(%rbp), %rax
 	movl	(%rax), %eax
@@ -4291,21 +4449,21 @@ _ZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_:
 	movss	%xmm0, (%rax)
 	.loc 19 265 0
 	nop
-.LBE32:
+.LBE38:
 	.loc 19 266 0
 	movq	-24(%rbp), %rax
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3562:
+.LFE3563:
 	.size	_ZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_, .-_ZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_
 	.section	.text._ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf,"axG",@progbits,_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC5ERKf,comdat
 	.align 2
 	.weak	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf
 	.type	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf, @function
 _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf:
-.LFB3564:
+.LFB3565:
 	.file 21 "/usr/include/glm/detail/type_mat4x4.inl"
 	.loc 21 110 0
 	.cfi_startproc
@@ -4321,23 +4479,23 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf:
 	.cfi_offset 3, -32
 	movq	%rdi, -56(%rbp)
 	movq	%rsi, -64(%rbp)
-.LBB33:
+.LBB39:
 	.loc 21 113 0
 	movq	-56(%rbp), %rax
 	movl	$3, %ebx
 	movq	%rax, %r12
-	jmp	.L194
-.L195:
+	jmp	.L196
+.L197:
 	.loc 21 113 0 is_stmt 0 discriminator 2
 	movq	%r12, %rdi
 	call	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC1Ev
 	addq	$16, %r12
 	subq	$1, %rbx
-.L194:
+.L196:
 	.loc 21 113 0 discriminator 1
 	cmpq	$-1, %rbx
-	jne	.L195
-.LBB34:
+	jne	.L197
+.LBB40:
 	.loc 21 115 0 is_stmt 1 discriminator 3
 	movl	.LC34(%rip), %eax
 	movl	%eax, -36(%rbp)
@@ -4400,8 +4558,8 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf:
 	movq	%rax, %rsi
 	movq	%rdx, %rdi
 	call	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_
-.LBE34:
-.LBE33:
+.LBE40:
+.LBE39:
 	.loc 21 120 0 discriminator 3
 	addq	$48, %rsp
 	popq	%rbx
@@ -4410,7 +4568,7 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3564:
+.LFE3565:
 	.size	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf, .-_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf
 	.weak	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC1ERKf
 	.set	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC1ERKf,_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf
@@ -4418,7 +4576,7 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf:
 	.weak	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_7tmat4x4IT_XT0_EEERKS5_S7_
 	.type	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_7tmat4x4IT_XT0_EEERKS5_S7_, @function
 _ZN3glm6detailmlIfLNS_9precisionE0EEENS0_7tmat4x4IT_XT0_EEERKS5_S7_:
-.LFB3566:
+.LFB3567:
 	.loc 21 780 0
 	.cfi_startproc
 	pushq	%rbp
@@ -4430,7 +4588,7 @@ _ZN3glm6detailmlIfLNS_9precisionE0EEENS0_7tmat4x4IT_XT0_EEERKS5_S7_:
 	movq	%rdi, -248(%rbp)
 	movq	%rsi, -256(%rbp)
 	movq	%rdx, -264(%rbp)
-.LBB35:
+.LBB41:
 	.loc 21 786 0
 	movq	-256(%rbp), %rax
 	movl	$0, %esi
@@ -4786,14 +4944,14 @@ _ZN3glm6detailmlIfLNS_9precisionE0EEENS0_7tmat4x4IT_XT0_EEERKS5_S7_:
 	call	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_
 	.loc 21 801 0
 	nop
-.LBE35:
+.LBE41:
 	.loc 21 802 0
 	movq	-248(%rbp), %rax
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3566:
+.LFE3567:
 	.size	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_7tmat4x4IT_XT0_EEERKS5_S7_, .-_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_7tmat4x4IT_XT0_EEERKS5_S7_
 	.section	.rodata
 	.align 8
@@ -4806,7 +4964,7 @@ _ZN3glm6detailmlIfLNS_9precisionE0EEENS0_7tmat4x4IT_XT0_EEERKS5_S7_:
 	.weak	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi
 	.type	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi, @function
 _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi:
-.LFB3567:
+.LFB3568:
 	.loc 21 43 0
 	.cfi_startproc
 	pushq	%rbp
@@ -4817,20 +4975,20 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi:
 	subq	$16, %rsp
 	movq	%rdi, -8(%rbp)
 	movl	%esi, -12(%rbp)
-.LBB36:
+.LBB42:
 	.loc 21 48 0
 	movq	-8(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv
 	cmpl	-12(%rbp), %eax
-	jg	.L199
+	jg	.L201
 	.loc 21 48 0 is_stmt 0 discriminator 1
 	movl	$_ZZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__, %ecx
 	movl	$48, %edx
 	movl	$.LC50, %esi
 	movl	$.LC51, %edi
 	call	__assert_fail
-.L199:
+.L201:
 	.loc 21 49 0 is_stmt 1
 	movl	-12(%rbp), %eax
 	cltq
@@ -4838,13 +4996,13 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rdx, %rax
-.LBE36:
+.LBE42:
 	.loc 21 50 0
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3567:
+.LFE3568:
 	.size	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi, .-_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi
 	.section	.rodata
 	.align 8
@@ -4857,7 +5015,7 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi:
 	.weak	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEixEi
 	.type	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEixEi, @function
 _ZN3glm6detail5tvec4IfLNS_9precisionE0EEixEi:
-.LFB3568:
+.LFB3569:
 	.loc 16 42 0
 	.cfi_startproc
 	pushq	%rbp
@@ -4868,44 +5026,44 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEixEi:
 	subq	$16, %rsp
 	movq	%rdi, -8(%rbp)
 	movl	%esi, -12(%rbp)
-.LBB37:
+.LBB43:
 	.loc 16 44 0
 	cmpl	$0, -12(%rbp)
-	js	.L202
+	js	.L204
 	.loc 16 44 0 is_stmt 0 discriminator 2
 	movq	-8(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv
 	cmpl	-12(%rbp), %eax
-	jg	.L203
-.L202:
+	jg	.L205
+.L204:
 	.loc 16 44 0 discriminator 1
 	movl	$_ZZN3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__, %ecx
 	movl	$44, %edx
 	movl	$.LC52, %esi
 	movl	$.LC53, %edi
 	call	__assert_fail
-.L203:
+.L205:
 	.loc 16 45 0 is_stmt 1
 	movq	-8(%rbp), %rax
 	movl	-12(%rbp), %edx
 	movslq	%edx, %rdx
 	salq	$2, %rdx
 	addq	%rdx, %rax
-.LBE37:
+.LBE43:
 	.loc 16 46 0
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3568:
+.LFE3569:
 	.size	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEixEi, .-_ZN3glm6detail5tvec4IfLNS_9precisionE0EEixEi
 	.section	.text._ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_,"axG",@progbits,_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC5ERKfS5_S5_S5_,comdat
 	.align 2
 	.weak	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_
 	.type	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_, @function
 _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_:
-.LFB3608:
+.LFB3609:
 	.loc 16 112 0
 	.cfi_startproc
 	pushq	%rbp
@@ -4918,7 +5076,7 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_:
 	movq	%rdx, -24(%rbp)
 	movq	%rcx, -32(%rbp)
 	movq	%r8, -40(%rbp)
-.LBB38:
+.LBB44:
 	.loc 16 122 0
 	movq	-16(%rbp), %rax
 	movl	(%rax), %eax
@@ -4936,13 +5094,13 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_:
 	movl	(%rax), %eax
 	movq	-8(%rbp), %rdx
 	movl	%eax, 12(%rdx)
-.LBE38:
+.LBE44:
 	.loc 16 123 0
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3608:
+.LFE3609:
 	.size	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_, .-_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_
 	.weak	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC1ERKfS5_S5_S5_
 	.set	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC1ERKfS5_S5_S5_,_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_
@@ -4950,7 +5108,7 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_:
 	.weak	_ZN3glm6detailmiIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_
 	.type	_ZN3glm6detailmiIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_, @function
 _ZN3glm6detailmiIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_:
-.LFB3660:
+.LFB3661:
 	.loc 18 538 0
 	.cfi_startproc
 	pushq	%rbp
@@ -4993,13 +5151,13 @@ _ZN3glm6detailmiIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3660:
+.LFE3661:
 	.size	_ZN3glm6detailmiIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_, .-_ZN3glm6detailmiIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_
 	.section	.text._ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_,"axG",@progbits,_ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_,comdat
 	.weak	_ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_
 	.type	_ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_, @function
 _ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_:
-.LFB3661:
+.LFB3662:
 	.file 22 "/usr/include/glm/detail/func_geometric.inl"
 	.loc 22 252 0
 	.cfi_startproc
@@ -5011,7 +5169,7 @@ _ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_:
 	subq	$48, %rsp
 	movq	%rdi, -24(%rbp)
 	movq	%rsi, -32(%rbp)
-.LBB39:
+.LBB45:
 	.loc 22 259 0
 	movq	-32(%rbp), %rax
 	movss	(%rax), %xmm1
@@ -5044,20 +5202,20 @@ _ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_:
 	movq	%rcx, %rsi
 	movq	%rax, %rdi
 	call	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_
-.LBE39:
+.LBE45:
 	.loc 22 261 0
 	movq	-24(%rbp), %rax
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3661:
+.LFE3662:
 	.size	_ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_, .-_ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_
 	.section	.text._ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_,"axG",@progbits,_ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_,comdat
 	.weak	_ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_
 	.type	_ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_, @function
 _ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_:
-.LFB3662:
+.LFB3663:
 	.loc 22 212 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5118,13 +5276,13 @@ _ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3662:
+.LFE3663:
 	.size	_ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_, .-_ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_
 	.section	.text._ZN3glm3dotIfLNS_9precisionE0ENS_6detail5tvec3EEET_RKT1_IS4_XT0_EES8_,"axG",@progbits,_ZN3glm3dotIfLNS_9precisionE0ENS_6detail5tvec3EEET_RKT1_IS4_XT0_EES8_,comdat
 	.weak	_ZN3glm3dotIfLNS_9precisionE0ENS_6detail5tvec3EEET_RKT1_IS4_XT0_EES8_
 	.type	_ZN3glm3dotIfLNS_9precisionE0ENS_6detail5tvec3EEET_RKT1_IS4_XT0_EES8_, @function
 _ZN3glm3dotIfLNS_9precisionE0ENS_6detail5tvec3EEET_RKT1_IS4_XT0_EES8_:
-.LFB3663:
+.LFB3664:
 	.loc 22 183 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5150,14 +5308,14 @@ _ZN3glm3dotIfLNS_9precisionE0ENS_6detail5tvec3EEET_RKT1_IS4_XT0_EES8_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3663:
+.LFE3664:
 	.size	_ZN3glm3dotIfLNS_9precisionE0ENS_6detail5tvec3EEET_RKT1_IS4_XT0_EES8_, .-_ZN3glm3dotIfLNS_9precisionE0ENS_6detail5tvec3EEET_RKT1_IS4_XT0_EES8_
 	.section	.text._ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev,"axG",@progbits,_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC5Ev,comdat
 	.align 2
 	.weak	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev
 	.type	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev, @function
 _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev:
-.LFB3665:
+.LFB3666:
 	.loc 16 59 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5166,7 +5324,7 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	movq	%rdi, -8(%rbp)
-.LBB40:
+.LBB46:
 	.loc 16 63 0
 	movq	-8(%rbp), %rdx
 	movl	.LC34(%rip), %eax
@@ -5180,13 +5338,13 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev:
 	movq	-8(%rbp), %rdx
 	movl	.LC34(%rip), %eax
 	movl	%eax, 12(%rdx)
-.LBE40:
+.LBE46:
 	.loc 16 64 0
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3665:
+.LFE3666:
 	.size	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev, .-_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev
 	.weak	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC1Ev
 	.set	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC1Ev,_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev
@@ -5195,7 +5353,7 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev:
 	.weak	_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi
 	.type	_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi, @function
 _ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi:
-.LFB3667:
+.LFB3668:
 	.loc 21 54 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5206,20 +5364,20 @@ _ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi:
 	subq	$16, %rsp
 	movq	%rdi, -8(%rbp)
 	movl	%esi, -12(%rbp)
-.LBB41:
+.LBB47:
 	.loc 21 59 0
 	movq	-8(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv
 	cmpl	-12(%rbp), %eax
-	jg	.L216
+	jg	.L218
 	.loc 21 59 0 is_stmt 0 discriminator 1
 	movl	$_ZZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__, %ecx
 	movl	$59, %edx
 	movl	$.LC50, %esi
 	movl	$.LC51, %edi
 	call	__assert_fail
-.L216:
+.L218:
 	.loc 21 60 0 is_stmt 1
 	movl	-12(%rbp), %eax
 	cltq
@@ -5227,20 +5385,20 @@ _ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi:
 	movq	%rax, %rdx
 	movq	-8(%rbp), %rax
 	addq	%rdx, %rax
-.LBE41:
+.LBE47:
 	.loc 21 61 0
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3667:
+.LFE3668:
 	.size	_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi, .-_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEi
 	.section	.text._ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_,"axG",@progbits,_ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_,comdat
 	.align 2
 	.weak	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_
 	.type	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_, @function
 _ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_:
-.LFB3668:
+.LFB3669:
 	.loc 16 243 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5277,13 +5435,13 @@ _ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3668:
+.LFE3669:
 	.size	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_, .-_ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_
 	.section	.text._ZN3glm3tanIfEET_RKS1_,"axG",@progbits,_ZN3glm3tanIfEET_RKS1_,comdat
 	.weak	_ZN3glm3tanIfEET_RKS1_
 	.type	_ZN3glm3tanIfEET_RKS1_, @function
 _ZN3glm3tanIfEET_RKS1_:
-.LFB3669:
+.LFB3670:
 	.loc 20 90 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5308,14 +5466,14 @@ _ZN3glm3tanIfEET_RKS1_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3669:
+.LFE3670:
 	.size	_ZN3glm3tanIfEET_RKS1_, .-_ZN3glm3tanIfEET_RKS1_
 	.section	.text._ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE,"axG",@progbits,_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC5ENS3_4ctorE,comdat
 	.align 2
 	.weak	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE
 	.type	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE, @function
 _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE:
-.LFB3671:
+.LFB3672:
 	.loc 21 103 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5330,23 +5488,23 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE:
 	.cfi_offset 3, -32
 	movq	%rdi, -24(%rbp)
 	movl	%esi, -28(%rbp)
-.LBB42:
+.LBB48:
 	.loc 21 106 0
 	movq	-24(%rbp), %rax
 	movl	$3, %ebx
 	movq	%rax, %r12
-	jmp	.L223
-.L224:
+	jmp	.L225
+.L226:
 	.loc 21 106 0 is_stmt 0 discriminator 2
 	movq	%r12, %rdi
 	call	_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC1Ev
 	addq	$16, %r12
 	subq	$1, %rbx
-.L223:
+.L225:
 	.loc 21 106 0 discriminator 1
 	cmpq	$-1, %rbx
-	jne	.L224
-.LBE42:
+	jne	.L226
+.LBE48:
 	.loc 21 107 0 is_stmt 1 discriminator 3
 	addq	$16, %rsp
 	popq	%rbx
@@ -5355,7 +5513,7 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3671:
+.LFE3672:
 	.size	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE, .-_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE
 	.weak	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC1ENS3_4ctorE
 	.set	_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC1ENS3_4ctorE,_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE
@@ -5364,7 +5522,7 @@ _ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE:
 	.weak	_ZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEi
 	.type	_ZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEi, @function
 _ZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEi:
-.LFB3673:
+.LFB3674:
 	.loc 16 49 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5375,43 +5533,43 @@ _ZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEi:
 	subq	$16, %rsp
 	movq	%rdi, -8(%rbp)
 	movl	%esi, -12(%rbp)
-.LBB43:
+.LBB49:
 	.loc 16 51 0
 	cmpl	$0, -12(%rbp)
-	js	.L226
+	js	.L228
 	.loc 16 51 0 is_stmt 0 discriminator 2
 	movq	-8(%rbp), %rax
 	movq	%rax, %rdi
 	call	_ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv
 	cmpl	-12(%rbp), %eax
-	jg	.L227
-.L226:
+	jg	.L229
+.L228:
 	.loc 16 51 0 discriminator 1
 	movl	$_ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__, %ecx
 	movl	$51, %edx
 	movl	$.LC52, %esi
 	movl	$.LC53, %edi
 	call	__assert_fail
-.L227:
+.L229:
 	.loc 16 52 0 is_stmt 1
 	movq	-8(%rbp), %rax
 	movl	-12(%rbp), %edx
 	movslq	%edx, %rdx
 	salq	$2, %rdx
 	addq	%rdx, %rax
-.LBE43:
+.LBE49:
 	.loc 16 53 0
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3673:
+.LFE3674:
 	.size	_ZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEi, .-_ZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEi
 	.section	.text._ZN3glm6detailplIfLNS_9precisionE0EEENS0_5tvec4IT_XT0_EEERKS5_S7_,"axG",@progbits,_ZN3glm6detailplIfLNS_9precisionE0EEENS0_5tvec4IT_XT0_EEERKS5_S7_,comdat
 	.weak	_ZN3glm6detailplIfLNS_9precisionE0EEENS0_5tvec4IT_XT0_EEERKS5_S7_
 	.type	_ZN3glm6detailplIfLNS_9precisionE0EEENS0_5tvec4IT_XT0_EEERKS5_S7_, @function
 _ZN3glm6detailplIfLNS_9precisionE0EEENS0_5tvec4IT_XT0_EEERKS5_S7_:
-.LFB3674:
+.LFB3675:
 	.loc 16 557 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5462,14 +5620,14 @@ _ZN3glm6detailplIfLNS_9precisionE0EEENS0_5tvec4IT_XT0_EEERKS5_S7_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3674:
+.LFE3675:
 	.size	_ZN3glm6detailplIfLNS_9precisionE0EEENS0_5tvec4IT_XT0_EEERKS5_S7_, .-_ZN3glm6detailplIfLNS_9precisionE0EEENS0_5tvec4IT_XT0_EEERKS5_S7_
 	.section	.text._ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv,"axG",@progbits,_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv,comdat
 	.align 2
 	.weak	_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv
 	.type	_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv, @function
 _ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv:
-.LFB3675:
+.LFB3676:
 	.loc 21 33 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5485,14 +5643,14 @@ _ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3675:
+.LFE3676:
 	.size	_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv, .-_ZNK3glm6detail7tmat4x4IfLNS_9precisionE0EE6lengthEv
 	.section	.text._ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv,"axG",@progbits,_ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv,comdat
 	.align 2
 	.weak	_ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv
 	.type	_ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv, @function
 _ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv:
-.LFB3676:
+.LFB3677:
 	.loc 16 33 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5508,13 +5666,13 @@ _ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3676:
+.LFE3677:
 	.size	_ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv, .-_ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv
 	.section	.text._ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_,"axG",@progbits,_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_,comdat
 	.weak	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_
 	.type	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_, @function
 _ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_:
-.LFB3720:
+.LFB3721:
 	.loc 18 552 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5557,13 +5715,13 @@ _ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3720:
+.LFE3721:
 	.size	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_, .-_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_RKS4_
 	.section	.text._ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEES7_,"axG",@progbits,_ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEES7_,comdat
 	.weak	_ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEES7_
 	.type	_ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEES7_, @function
 _ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEES7_:
-.LFB3721:
+.LFB3722:
 	.loc 22 63 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5574,7 +5732,7 @@ _ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEE
 	subq	$48, %rsp
 	movq	%rdi, -24(%rbp)
 	movq	%rsi, -32(%rbp)
-.LBB44:
+.LBB50:
 	.loc 22 65 0
 	leaq	-16(%rbp), %rax
 	movq	-32(%rbp), %rdx
@@ -5590,7 +5748,7 @@ _ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEE
 	addss	%xmm1, %xmm0
 	movss	%xmm0, -36(%rbp)
 	movl	-36(%rbp), %eax
-.LBE44:
+.LBE50:
 	.loc 22 67 0
 	movl	%eax, -36(%rbp)
 	movss	-36(%rbp), %xmm0
@@ -5598,13 +5756,13 @@ _ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEE
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3721:
+.LFE3722:
 	.size	_ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEES7_, .-_ZN3glm6detail11compute_dotINS0_5tvec3EfLNS_9precisionE0EE4callERKNS2_IfLS3_0EEES7_
 	.section	.text._ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_,"axG",@progbits,_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_,comdat
 	.weak	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_
 	.type	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_, @function
 _ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_:
-.LFB3724:
+.LFB3725:
 	.loc 18 578 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5647,16 +5805,16 @@ _ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3724:
+.LFE3725:
 	.size	_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_, .-_ZN3glm6detailmlIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_
 	.text
 	.type	_Z41__static_initialization_and_destruction_0ii, @function
 _Z41__static_initialization_and_destruction_0ii:
-.LFB3745:
+.LFB3746:
 	.loc 15 156 0
 	.cfi_startproc
 	.cfi_personality 0x3,__gxx_personality_v0
-	.cfi_lsda 0x3,.LLSDA3745
+	.cfi_lsda 0x3,.LLSDA3746
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
@@ -5669,10 +5827,10 @@ _Z41__static_initialization_and_destruction_0ii:
 	movl	%esi, -40(%rbp)
 	.loc 15 156 0
 	cmpl	$1, -36(%rbp)
-	jne	.L245
+	jne	.L247
 	.loc 15 156 0 is_stmt 0 discriminator 1
 	cmpl	$65535, -40(%rbp)
-	jne	.L245
+	jne	.L247
 	.file 23 "/usr/include/c++/4.8/iostream"
 	.loc 23 74 0 is_stmt 1
 	movl	$_ZStL8__ioinit, %edi
@@ -5702,8 +5860,8 @@ _Z41__static_initialization_and_destruction_0ii:
 	movl	$_ZN15ShaderGenerator11__directoryE, %esi
 	movl	$_ZNSsD1Ev, %edi
 	call	__cxa_atexit
-	jmp	.L245
-.L244:
+	jmp	.L247
+.L246:
 	movq	%rax, %rbx
 	.loc 6 43 0
 	leaq	-17(%rbp), %rax
@@ -5714,7 +5872,7 @@ _Z41__static_initialization_and_destruction_0ii:
 .LEHB63:
 	call	_Unwind_Resume
 .LEHE63:
-.L245:
+.L247:
 	.loc 15 156 0 is_stmt 1
 	addq	$40, %rsp
 	popq	%rbx
@@ -5722,27 +5880,27 @@ _Z41__static_initialization_and_destruction_0ii:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3745:
+.LFE3746:
 	.section	.gcc_except_table
-.LLSDA3745:
+.LLSDA3746:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE3745-.LLSDACSB3745
-.LLSDACSB3745:
-	.uleb128 .LEHB61-.LFB3745
+	.uleb128 .LLSDACSE3746-.LLSDACSB3746
+.LLSDACSB3746:
+	.uleb128 .LEHB61-.LFB3746
 	.uleb128 .LEHE61-.LEHB61
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB62-.LFB3745
+	.uleb128 .LEHB62-.LFB3746
 	.uleb128 .LEHE62-.LEHB62
-	.uleb128 .L244-.LFB3745
+	.uleb128 .L246-.LFB3746
 	.uleb128 0
-	.uleb128 .LEHB63-.LFB3745
+	.uleb128 .LEHB63-.LFB3746
 	.uleb128 .LEHE63-.LEHB63
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE3745:
+.LLSDACSE3746:
 	.text
 	.size	_Z41__static_initialization_and_destruction_0ii, .-_Z41__static_initialization_and_destruction_0ii
 	.section	.rodata
@@ -5759,7 +5917,7 @@ _ZL13window_height:
 	.text
 	.type	_GLOBAL__sub_I__Z16LoadFileToStringSs, @function
 _GLOBAL__sub_I__Z16LoadFileToStringSs:
-.LFB3746:
+.LFB3747:
 	.loc 15 156 0
 	.cfi_startproc
 	pushq	%rbp
@@ -5775,7 +5933,7 @@ _GLOBAL__sub_I__Z16LoadFileToStringSs:
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3746:
+.LFE3747:
 	.size	_GLOBAL__sub_I__Z16LoadFileToStringSs, .-_GLOBAL__sub_I__Z16LoadFileToStringSs
 	.section	.init_array,"aw"
 	.align 8
@@ -5853,14 +6011,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 .LC20:
 	.long	1148846080
 	.align 4
-.LC31:
+.LC32:
 	.long	1175979008
 	.align 4
-.LC32:
-	.long	1077936128
-	.align 4
 .LC33:
-	.long	1082130432
+	.long	1077936128
 	.align 4
 .LC34:
 	.long	0
@@ -5957,19 +6112,21 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.file 85 "/usr/include/glm/detail/type_mat.hpp"
 	.file 86 "/usr/include/glm/mat4x4.hpp"
 	.file 87 "/usr/include/x86_64-linux-gnu/bits/termios.h"
-	.file 88 "/usr/include/c++/4.8/bits/stl_pair.h"
-	.file 89 "/usr/include/x86_64-linux-gnu/bits/confname.h"
+	.file 88 "/usr/include/IL/il.h"
+	.file 89 "/usr/include/IL/ilu.h"
+	.file 90 "/usr/include/c++/4.8/bits/stl_pair.h"
+	.file 91 "/usr/include/x86_64-linux-gnu/bits/confname.h"
 	.section	.debug_info,"",@progbits
 .Ldebug_info0:
-	.long	0x9b1c
+	.long	0x9cca
 	.value	0x4
 	.long	.Ldebug_abbrev0
 	.byte	0x8
 	.uleb128 0x1
-	.long	.LASF1391
+	.long	.LASF1415
 	.byte	0x4
-	.long	.LASF1392
-	.long	.LASF1393
+	.long	.LASF1416
+	.long	.LASF1417
 	.long	.Ldebug_ranges0+0x30
 	.quad	0
 	.long	.Ldebug_line0
@@ -6766,12 +6923,12 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0xf
 	.long	0x66e
 	.uleb128 0x20
-	.long	.LASF1394
+	.long	.LASF1418
 	.byte	0x1
-	.byte	0x58
+	.byte	0x5a
 	.byte	0x4c
 	.uleb128 0x21
-	.long	.LASF1255
+	.long	.LASF1275
 	.byte	0x30
 	.byte	0x30
 	.uleb128 0x3
@@ -6945,7 +7102,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"eof"
 	.byte	0x20
 	.value	0x124
-	.long	.LASF1395
+	.long	.LASF1419
 	.long	0x69e
 	.uleb128 0x27
 	.long	.LASF93
@@ -7436,7 +7593,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x950
 	.byte	0x1
 	.uleb128 0x2e
-	.long	.LASF1396
+	.long	.LASF1420
 	.byte	0x11
 	.value	0x11d
 	.long	0xbc8
@@ -7544,7 +7701,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF118
 	.byte	0x11
 	.byte	0xb5
-	.long	.LASF1237
+	.long	.LASF1257
 	.long	0x460b
 	.uleb128 0x1a
 	.long	.LASF119
@@ -7949,7 +8106,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF118
 	.byte	0x11
 	.value	0x1aa
-	.long	.LASF1397
+	.long	.LASF1421
 	.long	0x460b
 	.uleb128 0x36
 	.long	.LASF180
@@ -10558,7 +10715,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x2997
 	.long	0x29a7
 	.uleb128 0x17
-	.long	0x7bde
+	.long	0x7cf3
 	.uleb128 0x18
 	.long	0x297c
 	.uleb128 0x18
@@ -10572,7 +10729,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x29b7
 	.long	0x29bd
 	.uleb128 0x17
-	.long	0x7bde
+	.long	0x7cf3
 	.byte	0
 	.uleb128 0x1c
 	.long	.LASF206
@@ -10584,7 +10741,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x29d5
 	.long	0x29db
 	.uleb128 0x17
-	.long	0x7be4
+	.long	0x7cf9
 	.byte	0
 	.uleb128 0x1c
 	.long	.LASF187
@@ -10596,7 +10753,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x29f3
 	.long	0x29f9
 	.uleb128 0x17
-	.long	0x7be4
+	.long	0x7cf9
 	.byte	0
 	.uleb128 0x3d
 	.string	"end"
@@ -10608,7 +10765,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x2a11
 	.long	0x2a17
 	.uleb128 0x17
-	.long	0x7be4
+	.long	0x7cf9
 	.byte	0
 	.uleb128 0x3e
 	.string	"_E"
@@ -10696,7 +10853,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"tan"
 	.byte	0x2
 	.value	0x1f5
-	.long	.LASF1398
+	.long	.LASF1422
 	.long	0x3121
 	.long	0x2aef
 	.uleb128 0x18
@@ -10757,8 +10914,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4611
 	.byte	0
 	.uleb128 0x4a
-	.long	.LASF1350
-	.byte	0x58
+	.long	.LASF1374
+	.byte	0x5a
 	.byte	0x4f
 	.long	0x2b8d
 	.byte	0x1
@@ -10783,7 +10940,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF447
 	.long	0x2b92
 	.uleb128 0x4c
-	.long	.LASF1242
+	.long	.LASF1262
 	.byte	0x17
 	.byte	0x4a
 	.long	0x269a
@@ -11858,7 +12015,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x3577
 	.long	0x357d
 	.uleb128 0x17
-	.long	0x7d8b
+	.long	0x7ea0
 	.byte	0
 	.uleb128 0x37
 	.long	.LASF540
@@ -11868,9 +12025,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x358e
 	.long	0x3599
 	.uleb128 0x17
-	.long	0x7d8b
+	.long	0x7ea0
 	.uleb128 0x18
-	.long	0x7d91
+	.long	0x7ea6
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF541
@@ -11882,7 +12039,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x35b2
 	.long	0x35b8
 	.uleb128 0x17
-	.long	0x7d9c
+	.long	0x7eb1
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF543
@@ -11894,19 +12051,19 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x35d1
 	.long	0x35d7
 	.uleb128 0x17
-	.long	0x7d9c
+	.long	0x7eb1
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF545
 	.byte	0x2f
 	.value	0x2ea
 	.long	.LASF546
-	.long	0x7da2
+	.long	0x7eb7
 	.byte	0x1
 	.long	0x35f0
 	.long	0x35f6
 	.uleb128 0x17
-	.long	0x7d8b
+	.long	0x7ea0
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF545
@@ -11918,7 +12075,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x360f
 	.long	0x361a
 	.uleb128 0x17
-	.long	0x7d8b
+	.long	0x7ea0
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -11927,12 +12084,12 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x2f
 	.value	0x2f6
 	.long	.LASF549
-	.long	0x7da2
+	.long	0x7eb7
 	.byte	0x1
 	.long	0x3633
 	.long	0x3639
 	.uleb128 0x17
-	.long	0x7d8b
+	.long	0x7ea0
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF548
@@ -11944,7 +12101,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x3652
 	.long	0x365d
 	.uleb128 0x17
-	.long	0x7d8b
+	.long	0x7ea0
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -11958,9 +12115,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x3676
 	.long	0x3681
 	.uleb128 0x17
-	.long	0x7d9c
+	.long	0x7eb1
 	.uleb128 0x18
-	.long	0x7da8
+	.long	0x7ebd
 	.byte	0
 	.uleb128 0xf
 	.long	0x353f
@@ -11969,14 +12126,14 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x2f
 	.value	0x306
 	.long	.LASF552
-	.long	0x7da2
+	.long	0x7eb7
 	.byte	0x1
 	.long	0x369f
 	.long	0x36aa
 	.uleb128 0x17
-	.long	0x7d8b
+	.long	0x7ea0
 	.uleb128 0x18
-	.long	0x7da8
+	.long	0x7ebd
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF553
@@ -11988,23 +12145,23 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x36c3
 	.long	0x36ce
 	.uleb128 0x17
-	.long	0x7d9c
+	.long	0x7eb1
 	.uleb128 0x18
-	.long	0x7da8
+	.long	0x7ebd
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF555
 	.byte	0x2f
 	.value	0x30e
 	.long	.LASF556
-	.long	0x7da2
+	.long	0x7eb7
 	.byte	0x1
 	.long	0x36e7
 	.long	0x36f2
 	.uleb128 0x17
-	.long	0x7d8b
+	.long	0x7ea0
 	.uleb128 0x18
-	.long	0x7da8
+	.long	0x7ebd
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF557
@@ -12016,21 +12173,21 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x370b
 	.long	0x3716
 	.uleb128 0x17
-	.long	0x7d9c
+	.long	0x7eb1
 	.uleb128 0x18
-	.long	0x7da8
+	.long	0x7ebd
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF559
 	.byte	0x2f
 	.value	0x316
 	.long	.LASF560
-	.long	0x7d91
+	.long	0x7ea6
 	.byte	0x1
 	.long	0x372f
 	.long	0x3735
 	.uleb128 0x17
-	.long	0x7d9c
+	.long	0x7eb1
 	.byte	0
 	.uleb128 0x3b
 	.long	.LASF431
@@ -12078,7 +12235,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x379b
 	.long	0x37a1
 	.uleb128 0x17
-	.long	0x7d6d
+	.long	0x7e82
 	.byte	0
 	.uleb128 0x37
 	.long	.LASF540
@@ -12088,9 +12245,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x37b2
 	.long	0x37bd
 	.uleb128 0x17
-	.long	0x7d6d
+	.long	0x7e82
 	.uleb128 0x18
-	.long	0x7d73
+	.long	0x7e88
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF541
@@ -12102,7 +12259,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x37d6
 	.long	0x37dc
 	.uleb128 0x17
-	.long	0x7d79
+	.long	0x7e8e
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF543
@@ -12114,19 +12271,19 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x37f5
 	.long	0x37fb
 	.uleb128 0x17
-	.long	0x7d79
+	.long	0x7e8e
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF545
 	.byte	0x2f
 	.value	0x2ea
 	.long	.LASF565
-	.long	0x7d7f
+	.long	0x7e94
 	.byte	0x1
 	.long	0x3814
 	.long	0x381a
 	.uleb128 0x17
-	.long	0x7d6d
+	.long	0x7e82
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF545
@@ -12138,7 +12295,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x3833
 	.long	0x383e
 	.uleb128 0x17
-	.long	0x7d6d
+	.long	0x7e82
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -12147,12 +12304,12 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x2f
 	.value	0x2f6
 	.long	.LASF567
-	.long	0x7d7f
+	.long	0x7e94
 	.byte	0x1
 	.long	0x3857
 	.long	0x385d
 	.uleb128 0x17
-	.long	0x7d6d
+	.long	0x7e82
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF548
@@ -12164,7 +12321,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x3876
 	.long	0x3881
 	.uleb128 0x17
-	.long	0x7d6d
+	.long	0x7e82
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -12178,9 +12335,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x389a
 	.long	0x38a5
 	.uleb128 0x17
-	.long	0x7d79
+	.long	0x7e8e
 	.uleb128 0x18
-	.long	0x7d85
+	.long	0x7e9a
 	.byte	0
 	.uleb128 0xf
 	.long	0x3763
@@ -12189,14 +12346,14 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x2f
 	.value	0x306
 	.long	.LASF570
-	.long	0x7d7f
+	.long	0x7e94
 	.byte	0x1
 	.long	0x38c3
 	.long	0x38ce
 	.uleb128 0x17
-	.long	0x7d6d
+	.long	0x7e82
 	.uleb128 0x18
-	.long	0x7d85
+	.long	0x7e9a
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF553
@@ -12208,23 +12365,23 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x38e7
 	.long	0x38f2
 	.uleb128 0x17
-	.long	0x7d79
+	.long	0x7e8e
 	.uleb128 0x18
-	.long	0x7d85
+	.long	0x7e9a
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF555
 	.byte	0x2f
 	.value	0x30e
 	.long	.LASF572
-	.long	0x7d7f
+	.long	0x7e94
 	.byte	0x1
 	.long	0x390b
 	.long	0x3916
 	.uleb128 0x17
-	.long	0x7d6d
+	.long	0x7e82
 	.uleb128 0x18
-	.long	0x7d85
+	.long	0x7e9a
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF557
@@ -12236,21 +12393,21 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x392f
 	.long	0x393a
 	.uleb128 0x17
-	.long	0x7d79
+	.long	0x7e8e
 	.uleb128 0x18
-	.long	0x7d85
+	.long	0x7e9a
 	.byte	0
 	.uleb128 0x38
 	.long	.LASF559
 	.byte	0x2f
 	.value	0x316
 	.long	.LASF574
-	.long	0x7d73
+	.long	0x7e88
 	.byte	0x1
 	.long	0x3953
 	.long	0x3959
 	.uleb128 0x17
-	.long	0x7d79
+	.long	0x7e8e
 	.byte	0
 	.uleb128 0x3b
 	.long	.LASF431
@@ -12533,7 +12690,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x8
 	.long	0x656
 	.uleb128 0x55
-	.long	.LASF1399
+	.long	.LASF1423
 	.uleb128 0x56
 	.byte	0x8
 	.long	0x4b5
@@ -14815,7 +14972,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4fab
 	.long	0x4fb1
 	.uleb128 0x17
-	.long	0x7b5c
+	.long	0x7c71
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
@@ -14826,7 +14983,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4fc8
 	.long	0x4fd3
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -14839,7 +14996,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4fea
 	.long	0x4ff5
 	.uleb128 0x17
-	.long	0x7b5c
+	.long	0x7c71
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -14850,7 +15007,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5004
 	.long	0x500a
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF802
@@ -14859,9 +15016,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5019
 	.long	0x5024
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF802
@@ -14870,7 +15027,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5033
 	.long	0x503e
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
 	.long	0x4f03
 	.byte	0
@@ -14881,7 +15038,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x504d
 	.long	0x5058
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -14892,7 +15049,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5067
 	.long	0x507c
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -14905,35 +15062,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x12
 	.byte	0xbb
 	.long	.LASF803
-	.long	0x7b6e
+	.long	0x7c83
 	.long	0x5093
 	.long	0x509e
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x12
 	.value	0x121
 	.long	.LASF804
-	.long	0x7b6e
+	.long	0x7c83
 	.long	0x50b6
 	.long	0x50bc
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x12
 	.value	0x12a
 	.long	.LASF805
-	.long	0x7b6e
+	.long	0x7c83
 	.long	0x50d4
 	.long	0x50da
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -14944,7 +15101,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x50f2
 	.long	0x50fd
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -14957,7 +15114,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5115
 	.long	0x5120
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -14977,7 +15134,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"W"
 	.long	0x285
 	.uleb128 0x17
-	.long	0x7b62
+	.long	0x7c77
 	.uleb128 0x18
 	.long	0x704e
 	.uleb128 0x18
@@ -15015,7 +15172,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x42
 	.byte	0x40
-	.long	0x7b7a
+	.long	0x7c8f
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -15037,7 +15194,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x51c7
 	.long	0x51cd
 	.uleb128 0x17
-	.long	0x7b8a
+	.long	0x7c9f
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF814
@@ -15046,7 +15203,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x51dc
 	.long	0x51e2
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF814
@@ -15055,9 +15212,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x51f1
 	.long	0x51fc
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF814
@@ -15066,7 +15223,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x520b
 	.long	0x5216
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
 	.long	0x517a
 	.byte	0
@@ -15077,7 +15234,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5225
 	.long	0x5230
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -15088,7 +15245,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x523f
 	.long	0x5295
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -15129,15 +15286,15 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x52a4
 	.long	0x52be
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7b9c
+	.long	0x7cb1
 	.uleb128 0x18
-	.long	0x7b9c
+	.long	0x7cb1
 	.uleb128 0x18
-	.long	0x7b9c
+	.long	0x7cb1
 	.uleb128 0x18
-	.long	0x7b9c
+	.long	0x7cb1
 	.byte	0
 	.uleb128 0xf
 	.long	0x51a5
@@ -15148,7 +15305,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x52d2
 	.long	0x52dd
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
 	.long	0x2940
 	.byte	0
@@ -15159,9 +15316,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x52ed
 	.long	0x52f8
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF814
@@ -15170,9 +15327,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5308
 	.long	0x5313
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF814
@@ -15181,9 +15338,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5323
 	.long	0x532e
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF814
@@ -15192,9 +15349,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x533e
 	.long	0x5349
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF814
@@ -15203,9 +15360,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5359
 	.long	0x5364
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF814
@@ -15214,9 +15371,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5374
 	.long	0x537f
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF814
@@ -15225,9 +15382,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x538f
 	.long	0x539a
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF814
@@ -15236,20 +15393,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x53aa
 	.long	0x53b5
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x15
 	.byte	0x2b
 	.long	.LASF815
-	.long	0x7bd2
+	.long	0x7ce7
 	.long	0x53cc
 	.long	0x53d7
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -15258,11 +15415,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x15
 	.byte	0x36
 	.long	.LASF816
-	.long	0x7b9c
+	.long	0x7cb1
 	.long	0x53ee
 	.long	0x53f9
 	.uleb128 0x17
-	.long	0x7b8a
+	.long	0x7c9f
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -15271,35 +15428,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x15
 	.value	0x165
 	.long	.LASF817
-	.long	0x7bd8
+	.long	0x7ced
 	.long	0x5411
 	.long	0x541c
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x15
 	.value	0x1d4
 	.long	.LASF818
-	.long	0x7bd8
+	.long	0x7ced
 	.long	0x5434
 	.long	0x543a
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x15
 	.value	0x1de
 	.long	.LASF819
-	.long	0x7bd8
+	.long	0x7ced
 	.long	0x5452
 	.long	0x5458
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -15310,7 +15467,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5470
 	.long	0x547b
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -15323,7 +15480,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5493
 	.long	0x549e
 	.uleb128 0x17
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -15361,7 +15518,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x43
 	.byte	0x3c
-	.long	0x7bfd
+	.long	0x7d12
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -15378,7 +15535,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x550b
 	.long	0x5511
 	.uleb128 0x17
-	.long	0x7c0d
+	.long	0x7d22
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF824
@@ -15387,7 +15544,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5520
 	.long	0x5526
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF824
@@ -15396,9 +15553,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5535
 	.long	0x5540
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF824
@@ -15407,7 +15564,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x554f
 	.long	0x555a
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
 	.long	0x54c9
 	.byte	0
@@ -15418,7 +15575,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5569
 	.long	0x5574
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -15429,7 +15586,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5583
 	.long	0x559d
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -15446,11 +15603,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x55ac
 	.long	0x55bc
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7c19
+	.long	0x7d2e
 	.uleb128 0x18
-	.long	0x7c19
+	.long	0x7d2e
 	.byte	0
 	.uleb128 0xf
 	.long	0x54e9
@@ -15461,7 +15618,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x55d0
 	.long	0x55db
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
 	.long	0x2a25
 	.byte	0
@@ -15472,9 +15629,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x55ea
 	.long	0x55f5
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF824
@@ -15483,9 +15640,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5604
 	.long	0x560f
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF824
@@ -15494,9 +15651,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x561e
 	.long	0x5629
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF824
@@ -15505,9 +15662,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5638
 	.long	0x5643
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF824
@@ -15516,9 +15673,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5652
 	.long	0x565d
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF824
@@ -15527,9 +15684,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x566c
 	.long	0x5677
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF824
@@ -15538,9 +15695,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5687
 	.long	0x5692
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF824
@@ -15549,20 +15706,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x56a2
 	.long	0x56ad
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x44
 	.byte	0x2b
 	.long	.LASF825
-	.long	0x7c1f
+	.long	0x7d34
 	.long	0x56c4
 	.long	0x56cf
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -15571,11 +15728,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x44
 	.byte	0x36
 	.long	.LASF826
-	.long	0x7c19
+	.long	0x7d2e
 	.long	0x56e6
 	.long	0x56f1
 	.uleb128 0x17
-	.long	0x7c0d
+	.long	0x7d22
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -15584,35 +15741,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x44
 	.value	0x118
 	.long	.LASF827
-	.long	0x7c25
+	.long	0x7d3a
 	.long	0x5709
 	.long	0x5714
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x44
 	.value	0x16d
 	.long	.LASF828
-	.long	0x7c25
+	.long	0x7d3a
 	.long	0x572c
 	.long	0x5732
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x44
 	.value	0x175
 	.long	.LASF829
-	.long	0x7c25
+	.long	0x7d3a
 	.long	0x574a
 	.long	0x5750
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -15623,7 +15780,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5768
 	.long	0x5773
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -15636,7 +15793,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x578b
 	.long	0x5796
 	.uleb128 0x17
-	.long	0x7c13
+	.long	0x7d28
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -15670,7 +15827,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x45
 	.byte	0x3c
-	.long	0x7c2b
+	.long	0x7d40
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -15687,7 +15844,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x57f9
 	.long	0x57ff
 	.uleb128 0x17
-	.long	0x7c3b
+	.long	0x7d50
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF834
@@ -15696,7 +15853,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x580e
 	.long	0x5814
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF834
@@ -15705,9 +15862,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5823
 	.long	0x582e
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF834
@@ -15716,7 +15873,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x583d
 	.long	0x5848
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
 	.long	0x57b7
 	.byte	0
@@ -15727,7 +15884,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5857
 	.long	0x5862
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -15738,7 +15895,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5871
 	.long	0x58a4
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -15765,13 +15922,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x58b3
 	.long	0x58c8
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7c47
+	.long	0x7d5c
 	.uleb128 0x18
-	.long	0x7c47
+	.long	0x7d5c
 	.uleb128 0x18
-	.long	0x7c47
+	.long	0x7d5c
 	.byte	0
 	.uleb128 0xf
 	.long	0x57d7
@@ -15782,7 +15939,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x58dc
 	.long	0x58e7
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
 	.long	0x2a2a
 	.byte	0
@@ -15793,9 +15950,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x58f6
 	.long	0x5901
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF834
@@ -15804,9 +15961,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5910
 	.long	0x591b
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF834
@@ -15815,9 +15972,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x592a
 	.long	0x5935
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF834
@@ -15826,9 +15983,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5944
 	.long	0x594f
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF834
@@ -15837,9 +15994,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x595f
 	.long	0x596a
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF834
@@ -15848,9 +16005,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x597a
 	.long	0x5985
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF834
@@ -15859,9 +16016,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5995
 	.long	0x59a0
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF834
@@ -15870,20 +16027,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x59b0
 	.long	0x59bb
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x46
 	.byte	0x2b
 	.long	.LASF835
-	.long	0x7c4d
+	.long	0x7d62
 	.long	0x59d2
 	.long	0x59dd
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -15892,11 +16049,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x46
 	.byte	0x36
 	.long	.LASF836
-	.long	0x7c47
+	.long	0x7d5c
 	.long	0x59f4
 	.long	0x59ff
 	.uleb128 0x17
-	.long	0x7c3b
+	.long	0x7d50
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -15905,35 +16062,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x46
 	.value	0x133
 	.long	.LASF837
-	.long	0x7c53
+	.long	0x7d68
 	.long	0x5a17
 	.long	0x5a22
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x46
 	.value	0x190
 	.long	.LASF838
-	.long	0x7c53
+	.long	0x7d68
 	.long	0x5a3a
 	.long	0x5a40
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x46
 	.value	0x199
 	.long	.LASF839
-	.long	0x7c53
+	.long	0x7d68
 	.long	0x5a58
 	.long	0x5a5e
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -15944,7 +16101,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5a76
 	.long	0x5a81
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -15957,7 +16114,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5a99
 	.long	0x5aa4
 	.uleb128 0x17
-	.long	0x7c41
+	.long	0x7d56
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -15991,7 +16148,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x47
 	.byte	0x38
-	.long	0x7c59
+	.long	0x7d6e
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -16008,7 +16165,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5b07
 	.long	0x5b0d
 	.uleb128 0x17
-	.long	0x7c69
+	.long	0x7d7e
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF844
@@ -16017,7 +16174,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5b1c
 	.long	0x5b22
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF844
@@ -16026,9 +16183,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5b31
 	.long	0x5b3c
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF844
@@ -16037,7 +16194,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5b4b
 	.long	0x5b56
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
 	.long	0x5ac5
 	.byte	0
@@ -16048,7 +16205,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5b65
 	.long	0x5b70
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -16059,7 +16216,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5b7f
 	.long	0x5ba3
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -16080,11 +16237,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5bb2
 	.long	0x5bc2
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7c75
+	.long	0x7d8a
 	.uleb128 0x18
-	.long	0x7c75
+	.long	0x7d8a
 	.byte	0
 	.uleb128 0xf
 	.long	0x5ae5
@@ -16095,7 +16252,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5bd6
 	.long	0x5be1
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
 	.long	0x2a2a
 	.byte	0
@@ -16106,9 +16263,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5bf0
 	.long	0x5bfb
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF844
@@ -16117,9 +16274,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5c0a
 	.long	0x5c15
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF844
@@ -16128,9 +16285,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5c24
 	.long	0x5c2f
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF844
@@ -16139,9 +16296,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5c3e
 	.long	0x5c49
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF844
@@ -16150,9 +16307,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5c58
 	.long	0x5c63
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF844
@@ -16161,9 +16318,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5c72
 	.long	0x5c7d
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF844
@@ -16172,9 +16329,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5c8d
 	.long	0x5c98
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF844
@@ -16183,20 +16340,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5ca8
 	.long	0x5cb3
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x48
 	.byte	0x2b
 	.long	.LASF845
-	.long	0x7c7b
+	.long	0x7d90
 	.long	0x5cca
 	.long	0x5cd5
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -16205,11 +16362,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x48
 	.byte	0x36
 	.long	.LASF846
-	.long	0x7c75
+	.long	0x7d8a
 	.long	0x5cec
 	.long	0x5cf7
 	.uleb128 0x17
-	.long	0x7c69
+	.long	0x7d7e
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -16218,35 +16375,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x48
 	.value	0x118
 	.long	.LASF847
-	.long	0x7c81
+	.long	0x7d96
 	.long	0x5d0f
 	.long	0x5d1a
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x48
 	.value	0x15f
 	.long	.LASF848
-	.long	0x7c81
+	.long	0x7d96
 	.long	0x5d32
 	.long	0x5d38
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x48
 	.value	0x167
 	.long	.LASF849
-	.long	0x7c81
+	.long	0x7d96
 	.long	0x5d50
 	.long	0x5d56
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -16257,7 +16414,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5d6e
 	.long	0x5d79
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -16270,7 +16427,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5d91
 	.long	0x5d9c
 	.uleb128 0x17
-	.long	0x7c6f
+	.long	0x7d84
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -16304,7 +16461,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x49
 	.byte	0x38
-	.long	0x7c87
+	.long	0x7d9c
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -16321,7 +16478,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5dff
 	.long	0x5e05
 	.uleb128 0x17
-	.long	0x7c97
+	.long	0x7dac
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF854
@@ -16330,7 +16487,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5e14
 	.long	0x5e1a
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF854
@@ -16339,9 +16496,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5e29
 	.long	0x5e34
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF854
@@ -16350,7 +16507,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5e43
 	.long	0x5e4e
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
 	.long	0x5dbd
 	.byte	0
@@ -16361,7 +16518,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5e5d
 	.long	0x5e68
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -16372,7 +16529,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5e77
 	.long	0x5e9b
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -16393,13 +16550,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5eaa
 	.long	0x5ebf
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7ca3
+	.long	0x7db8
 	.uleb128 0x18
-	.long	0x7ca3
+	.long	0x7db8
 	.uleb128 0x18
-	.long	0x7ca3
+	.long	0x7db8
 	.byte	0
 	.uleb128 0xf
 	.long	0x5ddd
@@ -16410,7 +16567,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5ed3
 	.long	0x5ede
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
 	.long	0x2a25
 	.byte	0
@@ -16421,9 +16578,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5eed
 	.long	0x5ef8
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF854
@@ -16432,9 +16589,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5f07
 	.long	0x5f12
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF854
@@ -16443,9 +16600,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5f21
 	.long	0x5f2c
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF854
@@ -16454,9 +16611,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5f3b
 	.long	0x5f46
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF854
@@ -16465,9 +16622,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5f56
 	.long	0x5f61
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF854
@@ -16476,9 +16633,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5f71
 	.long	0x5f7c
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF854
@@ -16487,9 +16644,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5f8c
 	.long	0x5f97
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF854
@@ -16498,20 +16655,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5fa7
 	.long	0x5fb2
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x4a
 	.byte	0x2b
 	.long	.LASF855
-	.long	0x7ca9
+	.long	0x7dbe
 	.long	0x5fc9
 	.long	0x5fd4
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -16520,11 +16677,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x4a
 	.byte	0x36
 	.long	.LASF856
-	.long	0x7ca3
+	.long	0x7db8
 	.long	0x5feb
 	.long	0x5ff6
 	.uleb128 0x17
-	.long	0x7c97
+	.long	0x7dac
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -16533,35 +16690,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x4a
 	.value	0x130
 	.long	.LASF857
-	.long	0x7caf
+	.long	0x7dc4
 	.long	0x600e
 	.long	0x6019
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x4a
 	.value	0x17f
 	.long	.LASF858
-	.long	0x7caf
+	.long	0x7dc4
 	.long	0x6031
 	.long	0x6037
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x4a
 	.value	0x188
 	.long	.LASF859
-	.long	0x7caf
+	.long	0x7dc4
 	.long	0x604f
 	.long	0x6055
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -16572,7 +16729,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x606d
 	.long	0x6078
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -16585,7 +16742,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6090
 	.long	0x609b
 	.uleb128 0x17
-	.long	0x7c9d
+	.long	0x7db2
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -16619,7 +16776,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x4b
 	.byte	0x38
-	.long	0x7cb5
+	.long	0x7dca
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -16636,7 +16793,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x60fe
 	.long	0x6104
 	.uleb128 0x17
-	.long	0x7cc5
+	.long	0x7dda
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF864
@@ -16645,7 +16802,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6113
 	.long	0x6119
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF864
@@ -16654,9 +16811,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6128
 	.long	0x6133
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF864
@@ -16665,7 +16822,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6142
 	.long	0x614d
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
 	.long	0x60bc
 	.byte	0
@@ -16676,7 +16833,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x615c
 	.long	0x6167
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -16687,7 +16844,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6176
 	.long	0x61a4
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -16712,11 +16869,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x61b3
 	.long	0x61c3
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7cd1
+	.long	0x7de6
 	.uleb128 0x18
-	.long	0x7cd1
+	.long	0x7de6
 	.byte	0
 	.uleb128 0xf
 	.long	0x60dc
@@ -16727,7 +16884,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x61d7
 	.long	0x61e2
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
 	.long	0x2940
 	.byte	0
@@ -16738,9 +16895,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x61f1
 	.long	0x61fc
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF864
@@ -16749,9 +16906,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x620b
 	.long	0x6216
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF864
@@ -16760,9 +16917,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6225
 	.long	0x6230
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF864
@@ -16771,9 +16928,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x623f
 	.long	0x624a
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF864
@@ -16782,9 +16939,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6259
 	.long	0x6264
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF864
@@ -16793,9 +16950,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6273
 	.long	0x627e
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF864
@@ -16804,9 +16961,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x628e
 	.long	0x6299
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF864
@@ -16815,20 +16972,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x62a9
 	.long	0x62b4
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x4c
 	.byte	0x2b
 	.long	.LASF865
-	.long	0x7cd7
+	.long	0x7dec
 	.long	0x62cb
 	.long	0x62d6
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -16837,11 +16994,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x4c
 	.byte	0x36
 	.long	.LASF866
-	.long	0x7cd1
+	.long	0x7de6
 	.long	0x62ed
 	.long	0x62f8
 	.uleb128 0x17
-	.long	0x7cc5
+	.long	0x7dda
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -16850,35 +17007,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x4c
 	.value	0x11b
 	.long	.LASF867
-	.long	0x7cdd
+	.long	0x7df2
 	.long	0x6310
 	.long	0x631b
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x4c
 	.value	0x162
 	.long	.LASF868
-	.long	0x7cdd
+	.long	0x7df2
 	.long	0x6333
 	.long	0x6339
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x4c
 	.value	0x16a
 	.long	.LASF869
-	.long	0x7cdd
+	.long	0x7df2
 	.long	0x6351
 	.long	0x6357
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -16889,7 +17046,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x636f
 	.long	0x637a
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -16902,7 +17059,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6392
 	.long	0x639d
 	.uleb128 0x17
-	.long	0x7ccb
+	.long	0x7de0
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -16936,7 +17093,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x4d
 	.byte	0x38
-	.long	0x7ce3
+	.long	0x7df8
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -16953,7 +17110,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6400
 	.long	0x6406
 	.uleb128 0x17
-	.long	0x7cf3
+	.long	0x7e08
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF874
@@ -16962,7 +17119,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6415
 	.long	0x641b
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF874
@@ -16971,9 +17128,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x642a
 	.long	0x6435
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF874
@@ -16982,7 +17139,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6444
 	.long	0x644f
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
 	.long	0x63be
 	.byte	0
@@ -16993,7 +17150,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x645e
 	.long	0x6469
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -17004,7 +17161,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6478
 	.long	0x64a6
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -17029,15 +17186,15 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x64b5
 	.long	0x64cf
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7cff
+	.long	0x7e14
 	.uleb128 0x18
-	.long	0x7cff
+	.long	0x7e14
 	.uleb128 0x18
-	.long	0x7cff
+	.long	0x7e14
 	.uleb128 0x18
-	.long	0x7cff
+	.long	0x7e14
 	.byte	0
 	.uleb128 0xf
 	.long	0x63de
@@ -17048,7 +17205,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x64e3
 	.long	0x64ee
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
 	.long	0x2a25
 	.byte	0
@@ -17059,9 +17216,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x64fd
 	.long	0x6508
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF874
@@ -17070,9 +17227,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6517
 	.long	0x6522
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF874
@@ -17081,9 +17238,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6531
 	.long	0x653c
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF874
@@ -17092,9 +17249,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x654c
 	.long	0x6557
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF874
@@ -17103,9 +17260,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6567
 	.long	0x6572
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF874
@@ -17114,9 +17271,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6582
 	.long	0x658d
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF874
@@ -17125,9 +17282,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x659d
 	.long	0x65a8
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF874
@@ -17136,20 +17293,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x65b8
 	.long	0x65c3
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x4e
 	.byte	0x2b
 	.long	.LASF875
-	.long	0x7d05
+	.long	0x7e1a
 	.long	0x65da
 	.long	0x65e5
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -17158,11 +17315,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x4e
 	.byte	0x36
 	.long	.LASF876
-	.long	0x7cff
+	.long	0x7e14
 	.long	0x65fc
 	.long	0x6607
 	.uleb128 0x17
-	.long	0x7cf3
+	.long	0x7e08
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -17171,35 +17328,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x4e
 	.value	0x146
 	.long	.LASF877
-	.long	0x7d0b
+	.long	0x7e20
 	.long	0x661f
 	.long	0x662a
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x4e
 	.value	0x1a3
 	.long	.LASF878
-	.long	0x7d0b
+	.long	0x7e20
 	.long	0x6642
 	.long	0x6648
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x4e
 	.value	0x1ad
 	.long	.LASF879
-	.long	0x7d0b
+	.long	0x7e20
 	.long	0x6660
 	.long	0x6666
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -17210,7 +17367,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x667e
 	.long	0x6689
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -17223,7 +17380,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x66a1
 	.long	0x66ac
 	.uleb128 0x17
-	.long	0x7cf9
+	.long	0x7e0e
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -17257,7 +17414,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x4f
 	.byte	0x38
-	.long	0x7d11
+	.long	0x7e26
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -17274,7 +17431,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x670f
 	.long	0x6715
 	.uleb128 0x17
-	.long	0x7d21
+	.long	0x7e36
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF884
@@ -17283,7 +17440,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6724
 	.long	0x672a
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF884
@@ -17292,9 +17449,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6739
 	.long	0x6744
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF884
@@ -17303,7 +17460,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6753
 	.long	0x675e
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
 	.long	0x66cd
 	.byte	0
@@ -17314,7 +17471,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x676d
 	.long	0x6778
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -17325,7 +17482,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6787
 	.long	0x67c9
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -17358,13 +17515,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x67d8
 	.long	0x67ed
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7d2d
+	.long	0x7e42
 	.uleb128 0x18
-	.long	0x7d2d
+	.long	0x7e42
 	.uleb128 0x18
-	.long	0x7d2d
+	.long	0x7e42
 	.byte	0
 	.uleb128 0xf
 	.long	0x66ed
@@ -17375,7 +17532,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6801
 	.long	0x680c
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
 	.long	0x2940
 	.byte	0
@@ -17386,9 +17543,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x681b
 	.long	0x6826
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF884
@@ -17397,9 +17554,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6835
 	.long	0x6840
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF884
@@ -17408,9 +17565,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x684f
 	.long	0x685a
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF884
@@ -17419,9 +17576,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6869
 	.long	0x6874
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF884
@@ -17430,9 +17587,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6884
 	.long	0x688f
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF884
@@ -17441,9 +17598,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x689f
 	.long	0x68aa
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF884
@@ -17452,9 +17609,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x68ba
 	.long	0x68c5
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF884
@@ -17463,20 +17620,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x68d5
 	.long	0x68e0
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x50
 	.byte	0x2b
 	.long	.LASF885
-	.long	0x7d33
+	.long	0x7e48
 	.long	0x68f7
 	.long	0x6902
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -17485,11 +17642,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x50
 	.byte	0x36
 	.long	.LASF886
-	.long	0x7d2d
+	.long	0x7e42
 	.long	0x6919
 	.long	0x6924
 	.uleb128 0x17
-	.long	0x7d21
+	.long	0x7e36
 	.uleb128 0x18
 	.long	0x6e5b
 	.byte	0
@@ -17498,35 +17655,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x50
 	.value	0x12f
 	.long	.LASF887
-	.long	0x7d39
+	.long	0x7e4e
 	.long	0x693c
 	.long	0x6947
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x50
 	.value	0x17e
 	.long	.LASF888
-	.long	0x7d39
+	.long	0x7e4e
 	.long	0x695f
 	.long	0x6965
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x50
 	.value	0x187
 	.long	.LASF889
-	.long	0x7d39
+	.long	0x7e4e
 	.long	0x697d
 	.long	0x6983
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -17537,7 +17694,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x699b
 	.long	0x69a6
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -17550,7 +17707,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x69be
 	.long	0x69c9
 	.uleb128 0x17
-	.long	0x7d27
+	.long	0x7e3c
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -17584,7 +17741,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF810
 	.byte	0x51
 	.byte	0x38
-	.long	0x7d3f
+	.long	0x7e54
 	.byte	0
 	.byte	0x3
 	.uleb128 0x2
@@ -17606,7 +17763,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6a37
 	.long	0x6a3d
 	.uleb128 0x17
-	.long	0x7d4f
+	.long	0x7e64
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF894
@@ -17615,7 +17772,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6a4c
 	.long	0x6a52
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.byte	0
 	.uleb128 0x3c
 	.long	.LASF894
@@ -17624,9 +17781,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6a61
 	.long	0x6a6c
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF894
@@ -17635,7 +17792,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6a7b
 	.long	0x6a86
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
 	.long	0x69ea
 	.byte	0
@@ -17646,7 +17803,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6a95
 	.long	0x6aa0
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -17657,7 +17814,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6aaf
 	.long	0x6af1
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
 	.long	0x701f
 	.uleb128 0x18
@@ -17690,15 +17847,15 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6b00
 	.long	0x6b1a
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7d5b
+	.long	0x7e70
 	.uleb128 0x18
-	.long	0x7d5b
+	.long	0x7e70
 	.uleb128 0x18
-	.long	0x7d5b
+	.long	0x7e70
 	.uleb128 0x18
-	.long	0x7d5b
+	.long	0x7e70
 	.byte	0
 	.uleb128 0xf
 	.long	0x6a15
@@ -17709,7 +17866,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6b2e
 	.long	0x6b39
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
 	.long	0x2a2a
 	.byte	0
@@ -17720,9 +17877,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6b48
 	.long	0x6b53
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7ba2
+	.long	0x7cb7
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF894
@@ -17731,9 +17888,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6b62
 	.long	0x6b6d
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7ba8
+	.long	0x7cbd
 	.byte	0
 	.uleb128 0x16
 	.long	.LASF894
@@ -17742,9 +17899,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6b7c
 	.long	0x6b87
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF894
@@ -17753,9 +17910,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6b97
 	.long	0x6ba2
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7bae
+	.long	0x7cc3
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF894
@@ -17764,9 +17921,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6bb2
 	.long	0x6bbd
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7bb4
+	.long	0x7cc9
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF894
@@ -17775,9 +17932,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6bcd
 	.long	0x6bd8
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7bba
+	.long	0x7ccf
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF894
@@ -17786,9 +17943,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6be8
 	.long	0x6bf3
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7bc0
+	.long	0x7cd5
 	.byte	0
 	.uleb128 0x6a
 	.long	.LASF894
@@ -17797,20 +17954,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6c03
 	.long	0x6c0e
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7bc6
+	.long	0x7cdb
 	.byte	0
 	.uleb128 0x1a
 	.long	.LASF224
 	.byte	0x52
 	.byte	0x2b
 	.long	.LASF895
-	.long	0x7d61
+	.long	0x7e76
 	.long	0x6c25
 	.long	0x6c30
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
 	.long	0x6a0a
 	.byte	0
@@ -17819,11 +17976,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x52
 	.byte	0x36
 	.long	.LASF896
-	.long	0x7d5b
+	.long	0x7e70
 	.long	0x6c47
 	.long	0x6c52
 	.uleb128 0x17
-	.long	0x7d4f
+	.long	0x7e64
 	.uleb128 0x18
 	.long	0x6a0a
 	.byte	0
@@ -17832,35 +17989,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x52
 	.value	0x145
 	.long	.LASF897
-	.long	0x7d67
+	.long	0x7e7c
 	.long	0x6c6a
 	.long	0x6c75
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
-	.long	0x7bcc
+	.long	0x7ce1
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
 	.byte	0x52
 	.value	0x1a2
 	.long	.LASF898
-	.long	0x7d67
+	.long	0x7e7c
 	.long	0x6c8d
 	.long	0x6c93
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF548
 	.byte	0x52
 	.value	0x1ac
 	.long	.LASF899
-	.long	0x7d67
+	.long	0x7e7c
 	.long	0x6cab
 	.long	0x6cb1
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.byte	0
 	.uleb128 0x32
 	.long	.LASF545
@@ -17871,7 +18028,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6cc9
 	.long	0x6cd4
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -17884,7 +18041,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x6cec
 	.long	0x6cf7
 	.uleb128 0x17
-	.long	0x7d55
+	.long	0x7e6a
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -17910,9 +18067,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x3121
 	.long	0x6d31
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.uleb128 0x6b
 	.long	.LASF938
@@ -17959,9 +18116,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4a4b
 	.byte	0
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.uleb128 0x18
-	.long	0x7b96
+	.long	0x7cab
 	.byte	0
 	.uleb128 0x25
 	.long	.LASF908
@@ -17978,9 +18135,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4a4b
 	.byte	0
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.uleb128 0x25
 	.long	.LASF910
@@ -18016,7 +18173,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4a4b
 	.byte	0
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x18
 	.long	0x701f
 	.byte	0
@@ -18034,9 +18191,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4a4b
 	.byte	0
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.byte	0
 	.uleb128 0x8
@@ -18107,11 +18264,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4a4b
 	.byte	0
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.uleb128 0x24
 	.long	.LASF927
@@ -18160,7 +18317,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4a4b
 	.byte	0
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.uleb128 0x24
 	.long	.LASF934
@@ -18177,9 +18334,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4a4b
 	.byte	0
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.uleb128 0x24
 	.long	.LASF936
@@ -18199,9 +18356,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	.LASF938
 	.long	.LASF939
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x18
-	.long	0x7b68
+	.long	0x7c7d
 	.byte	0
 	.uleb128 0x6c
 	.long	.LASF940
@@ -18330,7 +18487,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.uleb128 0x6d
 	.byte	0x4
-	.byte	0x59
+	.byte	0x5b
 	.byte	0x48
 	.long	0x769b
 	.uleb128 0x40
@@ -19182,7 +19339,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x785e
 	.long	0x7869
 	.uleb128 0x17
-	.long	0x7b56
+	.long	0x7c6b
 	.uleb128 0x18
 	.long	0x256a
 	.byte	0
@@ -19194,7 +19351,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7879
 	.long	0x7889
 	.uleb128 0x17
-	.long	0x7b56
+	.long	0x7c6b
 	.uleb128 0x18
 	.long	0x256a
 	.uleb128 0x18
@@ -19209,7 +19366,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x789d
 	.long	0x78a3
 	.uleb128 0x17
-	.long	0x7b56
+	.long	0x7c6b
 	.byte	0
 	.uleb128 0x1e
 	.long	.LASF1199
@@ -19220,7 +19377,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x1
 	.long	0x78b7
 	.uleb128 0x17
-	.long	0x7b56
+	.long	0x7c6b
 	.byte	0
 	.byte	0
 	.uleb128 0x15
@@ -19255,7 +19412,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x78fe
 	.long	0x7904
 	.uleb128 0x17
-	.long	0x7b74
+	.long	0x7c89
 	.byte	0
 	.uleb128 0x1d
 	.long	.LASF1204
@@ -19266,7 +19423,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7918
 	.long	0x7923
 	.uleb128 0x17
-	.long	0x7b74
+	.long	0x7c89
 	.uleb128 0x18
 	.long	0x6e67
 	.byte	0
@@ -19279,7 +19436,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7937
 	.long	0x7942
 	.uleb128 0x17
-	.long	0x7b74
+	.long	0x7c89
 	.uleb128 0x18
 	.long	0x6e67
 	.byte	0
@@ -19292,7 +19449,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7956
 	.long	0x7961
 	.uleb128 0x17
-	.long	0x7b74
+	.long	0x7c89
 	.uleb128 0x18
 	.long	0x6e67
 	.byte	0
@@ -19305,7 +19462,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x1
 	.long	0x7975
 	.uleb128 0x17
-	.long	0x7b74
+	.long	0x7c89
 	.byte	0
 	.byte	0
 	.uleb128 0x15
@@ -19328,7 +19485,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x79a4
 	.long	0x79aa
 	.uleb128 0x17
-	.long	0x7bea
+	.long	0x7cff
 	.byte	0
 	.uleb128 0x1d
 	.long	.LASF1194
@@ -19339,7 +19496,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x79be
 	.long	0x79c4
 	.uleb128 0x17
-	.long	0x7bea
+	.long	0x7cff
 	.byte	0
 	.uleb128 0x1d
 	.long	.LASF1215
@@ -19350,7 +19507,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x79d8
 	.long	0x79e3
 	.uleb128 0x17
-	.long	0x7bea
+	.long	0x7cff
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -19362,7 +19519,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x1
 	.long	0x79f3
 	.uleb128 0x17
-	.long	0x7bea
+	.long	0x7cff
 	.uleb128 0x18
 	.long	0x285
 	.byte	0
@@ -19410,7 +19567,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7a53
 	.long	0x7a59
 	.uleb128 0x17
-	.long	0x7bf0
+	.long	0x7d05
 	.byte	0
 	.uleb128 0x1d
 	.long	.LASF1225
@@ -19421,7 +19578,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7a6d
 	.long	0x7a7d
 	.uleb128 0x17
-	.long	0x7bf0
+	.long	0x7d05
 	.uleb128 0x18
 	.long	0x3efb
 	.uleb128 0x18
@@ -19437,7 +19594,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7a95
 	.long	0x7a9b
 	.uleb128 0x17
-	.long	0x7bf0
+	.long	0x7d05
 	.byte	0
 	.uleb128 0x1d
 	.long	.LASF1194
@@ -19448,7 +19605,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7aaf
 	.long	0x7ab5
 	.uleb128 0x17
-	.long	0x7bf0
+	.long	0x7d05
 	.byte	0
 	.uleb128 0x1d
 	.long	.LASF1229
@@ -19459,7 +19616,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7ac9
 	.long	0x7ae3
 	.uleb128 0x17
-	.long	0x7bf0
+	.long	0x7d05
 	.uleb128 0x18
 	.long	0x285
 	.uleb128 0x18
@@ -19477,50 +19634,187 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x1
 	.long	0x7af3
 	.uleb128 0x17
-	.long	0x7bf0
+	.long	0x7d05
 	.byte	0
 	.byte	0
 	.byte	0
 	.uleb128 0x10
 	.byte	0x8
 	.long	0x774b
-	.uleb128 0x15
+	.uleb128 0x2
 	.long	.LASF1233
+	.byte	0x58
+	.byte	0x4c
+	.long	0x203
+	.uleb128 0x2
+	.long	.LASF1234
+	.byte	0x58
+	.byte	0x4d
+	.long	0x3be5
+	.uleb128 0x2
+	.long	.LASF1235
+	.byte	0x58
+	.byte	0x53
+	.long	0x3be5
+	.uleb128 0x2
+	.long	.LASF1236
+	.byte	0x58
+	.byte	0x55
+	.long	0x203
+	.uleb128 0x3
+	.long	.LASF1237
+	.byte	0x50
+	.byte	0x59
+	.byte	0x69
+	.long	0x7c05
+	.uleb128 0x5a
+	.string	"Id"
+	.byte	0x59
+	.byte	0x6b
+	.long	0x7b22
+	.byte	0
+	.uleb128 0x4
+	.long	.LASF1238
+	.byte	0x59
+	.byte	0x6c
+	.long	0x7c05
+	.byte	0x8
+	.uleb128 0x4
+	.long	.LASF1239
+	.byte	0x59
+	.byte	0x6d
+	.long	0x7b22
+	.byte	0x10
+	.uleb128 0x4
+	.long	.LASF1240
+	.byte	0x59
+	.byte	0x6e
+	.long	0x7b22
+	.byte	0x14
+	.uleb128 0x4
+	.long	.LASF1241
+	.byte	0x59
+	.byte	0x6f
+	.long	0x7b22
+	.byte	0x18
+	.uleb128 0x5a
+	.string	"Bpp"
+	.byte	0x59
+	.byte	0x70
+	.long	0x7b17
+	.byte	0x1c
+	.uleb128 0x4
+	.long	.LASF1242
+	.byte	0x59
+	.byte	0x71
+	.long	0x7b22
+	.byte	0x20
+	.uleb128 0x4
+	.long	.LASF1243
+	.byte	0x59
+	.byte	0x72
+	.long	0x7b01
+	.byte	0x24
+	.uleb128 0x4
+	.long	.LASF1244
+	.byte	0x59
+	.byte	0x73
+	.long	0x7b01
+	.byte	0x28
+	.uleb128 0x4
+	.long	.LASF1245
+	.byte	0x59
+	.byte	0x74
+	.long	0x7b01
+	.byte	0x2c
+	.uleb128 0x4
+	.long	.LASF1246
+	.byte	0x59
+	.byte	0x75
+	.long	0x7c05
+	.byte	0x30
+	.uleb128 0x4
+	.long	.LASF1247
+	.byte	0x59
+	.byte	0x76
+	.long	0x7b01
+	.byte	0x38
+	.uleb128 0x4
+	.long	.LASF1248
+	.byte	0x59
+	.byte	0x77
+	.long	0x7b22
+	.byte	0x3c
+	.uleb128 0x4
+	.long	.LASF1249
+	.byte	0x59
+	.byte	0x78
+	.long	0x7b01
+	.byte	0x40
+	.uleb128 0x4
+	.long	.LASF1250
+	.byte	0x59
+	.byte	0x79
+	.long	0x7b22
+	.byte	0x44
+	.uleb128 0x4
+	.long	.LASF1251
+	.byte	0x59
+	.byte	0x7a
+	.long	0x7b22
+	.byte	0x48
+	.uleb128 0x4
+	.long	.LASF1252
+	.byte	0x59
+	.byte	0x7b
+	.long	0x7b22
+	.byte	0x4c
+	.byte	0
+	.uleb128 0x10
+	.byte	0x8
+	.long	0x7b17
+	.uleb128 0x2
+	.long	.LASF1237
+	.byte	0x59
+	.byte	0x7c
+	.long	0x7b2d
+	.uleb128 0x15
+	.long	.LASF1253
 	.byte	0x1
 	.byte	0xa
 	.byte	0xe
-	.long	0x7b56
+	.long	0x7c6b
 	.uleb128 0x2f
-	.long	.LASF1234
+	.long	.LASF1254
 	.byte	0xa
 	.byte	0x11
 	.long	0x46eb
 	.uleb128 0x2f
-	.long	.LASF1235
+	.long	.LASF1255
 	.byte	0xa
 	.byte	0x13
 	.long	0x3bd8
 	.uleb128 0x72
-	.long	.LASF1236
+	.long	.LASF1256
 	.byte	0xa
 	.byte	0x17
-	.long	.LASF1238
+	.long	.LASF1258
 	.byte	0x1
 	.uleb128 0x73
-	.long	.LASF1239
+	.long	.LASF1259
 	.byte	0xa
 	.byte	0x19
-	.long	.LASF1240
+	.long	.LASF1260
 	.byte	0x1
-	.long	0x7b45
+	.long	0x7c5a
 	.uleb128 0x18
 	.long	0x256a
 	.byte	0
 	.uleb128 0x74
-	.long	.LASF1400
+	.long	.LASF1424
 	.byte	0xa
 	.byte	0x1b
-	.long	.LASF1401
+	.long	.LASF1425
 	.long	0x46eb
 	.byte	0x1
 	.byte	0
@@ -19544,7 +19838,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x78be
 	.uleb128 0xc
 	.long	0x4c8a
-	.long	0x7b8a
+	.long	0x7c9f
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x3
@@ -19609,7 +19903,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x2b9
 	.uleb128 0xc
 	.long	0x4a7b
-	.long	0x7c0d
+	.long	0x7d22
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x1
@@ -19631,7 +19925,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x54bd
 	.uleb128 0xc
 	.long	0x4ef7
-	.long	0x7c3b
+	.long	0x7d50
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x2
@@ -19653,7 +19947,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x57ab
 	.uleb128 0xc
 	.long	0x4ef7
-	.long	0x7c69
+	.long	0x7d7e
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x1
@@ -19675,7 +19969,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5ab9
 	.uleb128 0xc
 	.long	0x4a7b
-	.long	0x7c97
+	.long	0x7dac
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x2
@@ -19697,7 +19991,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x5db1
 	.uleb128 0xc
 	.long	0x4c8a
-	.long	0x7cc5
+	.long	0x7dda
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x1
@@ -19719,7 +20013,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x60b0
 	.uleb128 0xc
 	.long	0x4a7b
-	.long	0x7cf3
+	.long	0x7e08
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x3
@@ -19741,7 +20035,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x63b2
 	.uleb128 0xc
 	.long	0x4c8a
-	.long	0x7d21
+	.long	0x7e36
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x2
@@ -19763,7 +20057,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x66c1
 	.uleb128 0xc
 	.long	0x4ef7
-	.long	0x7d4f
+	.long	0x7e64
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x3
@@ -19803,7 +20097,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x3524
 	.uleb128 0x54
 	.byte	0x8
-	.long	0x7d97
+	.long	0x7eac
 	.uleb128 0xf
 	.long	0x2edd
 	.uleb128 0x10
@@ -19821,7 +20115,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE818-.LFB818
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x7de6
+	.long	0x7efb
 	.uleb128 0x76
 	.string	"__a"
 	.byte	0x1
@@ -19845,7 +20139,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE1256-.LFB1256
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x7e11
+	.long	0x7f26
 	.uleb128 0x78
 	.string	"__x"
 	.byte	0x2
@@ -19861,7 +20155,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE1259-.LFB1259
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x7e3c
+	.long	0x7f51
 	.uleb128 0x78
 	.string	"__x"
 	.byte	0x2
@@ -19877,12 +20171,12 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE2968-.LFB2968
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x7e64
+	.long	0x7f79
 	.uleb128 0x76
 	.string	"x"
 	.byte	0x3
 	.byte	0xb8
-	.long	0x7e64
+	.long	0x7f79
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -19890,18 +20184,18 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0xf
 	.long	0x701f
 	.uleb128 0x79
-	.long	.LASF1245
+	.long	.LASF1265
 	.byte	0x4
 	.byte	0x9
-	.long	.LASF1247
+	.long	.LASF1267
 	.long	0x256a
 	.quad	.LFB3326
 	.quad	.LFE3326-.LFB3326
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x7ed3
+	.long	0x7fe8
 	.uleb128 0x7a
-	.long	.LASF1241
+	.long	.LASF1261
 	.byte	0x4
 	.byte	0x9
 	.long	0x256a
@@ -19912,7 +20206,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x7b
 	.long	.Ldebug_ranges0+0
 	.uleb128 0x7c
-	.long	.LASF1243
+	.long	.LASF1263
 	.byte	0x4
 	.byte	0xa
 	.long	0x2aef
@@ -19920,7 +20214,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -560
 	.uleb128 0x7c
-	.long	.LASF1244
+	.long	.LASF1264
 	.byte	0x4
 	.byte	0xb
 	.long	0x2b16
@@ -19939,21 +20233,21 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0x79
-	.long	.LASF1246
+	.long	.LASF1266
 	.byte	0x5
 	.byte	0x9
-	.long	.LASF1248
+	.long	.LASF1268
 	.long	0x285
 	.quad	.LFB3327
 	.quad	.LFE3327-.LFB3327
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x7f37
+	.long	0x804c
 	.uleb128 0x7e
 	.quad	.LBB4
 	.quad	.LBE4-.LBB4
 	.uleb128 0x7c
-	.long	.LASF1249
+	.long	.LASF1269
 	.byte	0x5
 	.byte	0xa
 	.long	0x7075
@@ -19961,7 +20255,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -160
 	.uleb128 0x7c
-	.long	.LASF1250
+	.long	.LASF1270
 	.byte	0x5
 	.byte	0xa
 	.long	0x7075
@@ -19979,21 +20273,21 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0x79
-	.long	.LASF1251
+	.long	.LASF1271
 	.byte	0x5
 	.byte	0x16
-	.long	.LASF1252
+	.long	.LASF1272
 	.long	0x285
 	.quad	.LFB3328
 	.quad	.LFE3328-.LFB3328
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x7f9b
+	.long	0x80b0
 	.uleb128 0x7e
 	.quad	.LBB5
 	.quad	.LBE5-.LBB5
 	.uleb128 0x7c
-	.long	.LASF1249
+	.long	.LASF1269
 	.byte	0x5
 	.byte	0x17
 	.long	0x7075
@@ -20001,7 +20295,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -160
 	.uleb128 0x7c
-	.long	.LASF1250
+	.long	.LASF1270
 	.byte	0x5
 	.byte	0x17
 	.long	0x7075
@@ -20025,9 +20319,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3329-.LFB3329
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x7fc7
+	.long	0x80dc
 	.uleb128 0x7a
-	.long	.LASF1253
+	.long	.LASF1273
 	.byte	0x6
 	.byte	0x2d
 	.long	0x256a
@@ -20043,9 +20337,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3330-.LFB3330
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x809b
+	.long	0x81b0
 	.uleb128 0x7a
-	.long	.LASF1241
+	.long	.LASF1261
 	.byte	0x6
 	.byte	0x31
 	.long	0x256a
@@ -20054,7 +20348,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.sleb128 -88
 	.byte	0x6
 	.uleb128 0x7a
-	.long	.LASF1254
+	.long	.LASF1274
 	.byte	0x6
 	.byte	0x31
 	.long	0x769b
@@ -20062,7 +20356,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -92
 	.uleb128 0x7a
-	.long	.LASF1255
+	.long	.LASF1275
 	.byte	0x6
 	.byte	0x31
 	.long	0x3bd8
@@ -20073,7 +20367,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LBB6
 	.quad	.LBE6-.LBB6
 	.uleb128 0x7c
-	.long	.LASF1256
+	.long	.LASF1276
 	.byte	0x6
 	.byte	0x3b
 	.long	0x46eb
@@ -20081,7 +20375,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -72
 	.uleb128 0x7c
-	.long	.LASF1257
+	.long	.LASF1277
 	.byte	0x6
 	.byte	0x42
 	.long	0x256a
@@ -20089,7 +20383,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -64
 	.uleb128 0x7c
-	.long	.LASF1258
+	.long	.LASF1278
 	.byte	0x6
 	.byte	0x44
 	.long	0x2ae
@@ -20097,7 +20391,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -48
 	.uleb128 0x7c
-	.long	.LASF1259
+	.long	.LASF1279
 	.byte	0x6
 	.byte	0x4a
 	.long	0x46f7
@@ -20108,7 +20402,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LBB8
 	.quad	.LBE8-.LBB8
 	.uleb128 0x7c
-	.long	.LASF1260
+	.long	.LASF1280
 	.byte	0x6
 	.byte	0x4e
 	.long	0x46f7
@@ -20116,7 +20410,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -76
 	.uleb128 0x7c
-	.long	.LASF1261
+	.long	.LASF1281
 	.byte	0x6
 	.byte	0x51
 	.long	0x48d2
@@ -20141,7 +20435,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3331-.LFB3331
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8130
+	.long	0x8245
 	.uleb128 0x7a
 	.long	.LASF1186
 	.byte	0x6
@@ -20162,7 +20456,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LBB9
 	.quad	.LBE9-.LBB9
 	.uleb128 0x7c
-	.long	.LASF1262
+	.long	.LASF1282
 	.byte	0x6
 	.byte	0x6e
 	.long	0x46eb
@@ -20170,7 +20464,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -28
 	.uleb128 0x7c
-	.long	.LASF1259
+	.long	.LASF1279
 	.byte	0x6
 	.byte	0x74
 	.long	0x46f7
@@ -20181,7 +20475,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LBB11
 	.quad	.LBE11-.LBB11
 	.uleb128 0x7c
-	.long	.LASF1260
+	.long	.LASF1280
 	.byte	0x6
 	.byte	0x78
 	.long	0x46f7
@@ -20189,7 +20483,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -32
 	.uleb128 0x7c
-	.long	.LASF1261
+	.long	.LASF1281
 	.byte	0x6
 	.byte	0x7b
 	.long	0x48d2
@@ -20206,9 +20500,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3332-.LFB3332
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x819b
+	.long	0x82b0
 	.uleb128 0x7a
-	.long	.LASF1263
+	.long	.LASF1283
 	.byte	0x6
 	.byte	0x87
 	.long	0x256a
@@ -20217,7 +20511,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.sleb128 -72
 	.byte	0x6
 	.uleb128 0x7a
-	.long	.LASF1264
+	.long	.LASF1284
 	.byte	0x6
 	.byte	0x87
 	.long	0x256a
@@ -20229,7 +20523,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LBB12
 	.quad	.LBE12-.LBB12
 	.uleb128 0x7c
-	.long	.LASF1265
+	.long	.LASF1285
 	.byte	0x6
 	.byte	0x88
 	.long	0x46eb
@@ -20237,7 +20531,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -56
 	.uleb128 0x7c
-	.long	.LASF1266
+	.long	.LASF1286
 	.byte	0x6
 	.byte	0x89
 	.long	0x46eb
@@ -20250,18 +20544,18 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x777b
 	.byte	0x29
 	.byte	0
-	.long	0x81ab
-	.long	0x81ce
+	.long	0x82c0
+	.long	0x82e3
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x81ce
+	.long	.LASF1289
+	.long	0x82e3
 	.uleb128 0x82
-	.long	.LASF1267
+	.long	.LASF1287
 	.byte	0x7
 	.byte	0x29
 	.long	0x256a
 	.uleb128 0x82
-	.long	.LASF1268
+	.long	.LASF1288
 	.byte	0x7
 	.byte	0x29
 	.long	0x256a
@@ -20269,26 +20563,26 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0xf
 	.long	0x7afb
 	.uleb128 0x83
-	.long	0x819b
-	.long	.LASF1271
+	.long	0x82b0
+	.long	.LASF1291
 	.quad	.LFB3336
 	.quad	.LFE3336-.LFB3336
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x81f7
-	.long	0x8216
+	.long	0x830c
+	.long	0x832b
 	.uleb128 0x84
-	.long	0x81ab
+	.long	0x82c0
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -72
 	.uleb128 0x84
-	.long	0x81b5
+	.long	0x82ca
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -80
 	.uleb128 0x84
-	.long	0x81c1
+	.long	0x82d6
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -88
@@ -20297,53 +20591,53 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x779b
 	.byte	0x32
 	.byte	0
-	.long	0x8226
-	.long	0x8255
+	.long	0x833b
+	.long	0x836a
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x81ce
+	.long	.LASF1289
+	.long	0x82e3
 	.uleb128 0x82
-	.long	.LASF1270
+	.long	.LASF1290
 	.byte	0x7
 	.byte	0x32
 	.long	0x256a
 	.uleb128 0x82
-	.long	.LASF1267
+	.long	.LASF1287
 	.byte	0x7
 	.byte	0x32
 	.long	0x256a
 	.uleb128 0x82
-	.long	.LASF1268
+	.long	.LASF1288
 	.byte	0x7
 	.byte	0x32
 	.long	0x256a
 	.byte	0
 	.uleb128 0x83
-	.long	0x8216
-	.long	.LASF1272
+	.long	0x832b
+	.long	.LASF1292
 	.quad	.LFB3339
 	.quad	.LFE3339-.LFB3339
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8279
-	.long	0x82a0
+	.long	0x838e
+	.long	0x83b5
 	.uleb128 0x84
-	.long	0x8226
+	.long	0x833b
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.uleb128 0x84
-	.long	0x8230
+	.long	0x8345
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -64
 	.uleb128 0x84
-	.long	0x823c
+	.long	0x8351
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -72
 	.uleb128 0x84
-	.long	0x8248
+	.long	0x835d
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -80
@@ -20355,11 +20649,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3341-.LFB3341
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x82c1
-	.long	0x82cf
+	.long	0x83d6
+	.long	0x83e4
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x81ce
+	.long	.LASF1289
+	.long	0x82e3
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20371,16 +20665,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3342-.LFB3342
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x82f0
-	.long	0x830d
+	.long	0x8405
+	.long	0x8422
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x81ce
+	.long	.LASF1289
+	.long	0x82e3
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -40
 	.uleb128 0x7a
-	.long	.LASF1273
+	.long	.LASF1293
 	.byte	0x7
 	.byte	0x3f
 	.long	0x256a
@@ -20390,16 +20684,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x6
 	.byte	0
 	.uleb128 0x79
-	.long	.LASF1274
+	.long	.LASF1294
 	.byte	0x8
 	.byte	0x8
-	.long	.LASF1275
+	.long	.LASF1295
 	.long	0x285
 	.quad	.LFB3343
 	.quad	.LFE3343-.LFB3343
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8358
+	.long	0x846d
 	.uleb128 0x7e
 	.quad	.LBB15
 	.quad	.LBE15-.LBB15
@@ -20414,18 +20708,18 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0x79
-	.long	.LASF1276
+	.long	.LASF1296
 	.byte	0x9
 	.byte	0x15
-	.long	.LASF1277
+	.long	.LASF1297
 	.long	0x4a23
 	.quad	.LFB3344
 	.quad	.LFE3344-.LFB3344
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x83f3
+	.long	0x8508
 	.uleb128 0x7a
-	.long	.LASF1278
+	.long	.LASF1298
 	.byte	0x9
 	.byte	0x15
 	.long	0x285
@@ -20433,7 +20727,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -36
 	.uleb128 0x7a
-	.long	.LASF1279
+	.long	.LASF1299
 	.byte	0x9
 	.byte	0x15
 	.long	0x285
@@ -20441,7 +20735,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -40
 	.uleb128 0x7a
-	.long	.LASF1280
+	.long	.LASF1300
 	.byte	0x9
 	.byte	0x15
 	.long	0x256a
@@ -20450,7 +20744,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.sleb128 -48
 	.byte	0x6
 	.uleb128 0x7a
-	.long	.LASF1281
+	.long	.LASF1301
 	.byte	0x9
 	.byte	0x15
 	.long	0x285
@@ -20458,7 +20752,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -52
 	.uleb128 0x7a
-	.long	.LASF1282
+	.long	.LASF1302
 	.byte	0x9
 	.byte	0x15
 	.long	0x285
@@ -20466,7 +20760,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -56
 	.uleb128 0x7a
-	.long	.LASF1283
+	.long	.LASF1303
 	.byte	0x9
 	.byte	0x15
 	.long	0x470f
@@ -20477,7 +20771,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LBB16
 	.quad	.LBE16-.LBB16
 	.uleb128 0x7c
-	.long	.LASF1284
+	.long	.LASF1304
 	.byte	0x9
 	.byte	0x23
 	.long	0x4a23
@@ -20487,16 +20781,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0x79
-	.long	.LASF1285
+	.long	.LASF1305
 	.byte	0x9
 	.byte	0x3f
-	.long	.LASF1286
+	.long	.LASF1306
 	.long	0x471b
 	.quad	.LFB3345
 	.quad	.LFE3345-.LFB3345
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8445
+	.long	0x855a
 	.uleb128 0x7e
 	.quad	.LBB17
 	.quad	.LBE17-.LBB17
@@ -20519,33 +20813,90 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0x7f
-	.long	0x7b2f
+	.long	0x7c44
 	.byte	0x22
 	.quad	.LFB3346
 	.quad	.LFE3346-.LFB3346
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8471
+	.long	0x861f
 	.uleb128 0x7a
-	.long	.LASF1241
+	.long	.LASF1261
 	.byte	0xa
 	.byte	0x22
 	.long	0x256a
+	.uleb128 0x4
+	.byte	0x91
+	.sleb128 -152
+	.byte	0x6
+	.uleb128 0x7e
+	.quad	.LBB18
+	.quad	.LBE18-.LBB18
+	.uleb128 0x7c
+	.long	.LASF1307
+	.byte	0xa
+	.byte	0x2b
+	.long	0x7b22
 	.uleb128 0x3
 	.byte	0x91
-	.sleb128 -24
-	.byte	0x6
-	.byte	0
+	.sleb128 -140
+	.uleb128 0x7c
+	.long	.LASF1308
+	.byte	0xa
+	.byte	0x2e
+	.long	0x7b0c
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -141
 	.uleb128 0x87
-	.long	0x7b23
-	.byte	0x2c
+	.quad	.LBB20
+	.quad	.LBE20-.LBB20
+	.long	0x85fc
+	.uleb128 0x7c
+	.long	.LASF1309
+	.byte	0xa
+	.byte	0x31
+	.long	0x7c0b
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -128
+	.uleb128 0x7e
+	.quad	.LBB22
+	.quad	.LBE22-.LBB22
+	.uleb128 0x7c
+	.long	.LASF1310
+	.byte	0xa
+	.byte	0x3a
+	.long	0x7b01
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -136
+	.byte	0
+	.byte	0
+	.uleb128 0x7e
+	.quad	.LBB23
+	.quad	.LBE23-.LBB23
+	.uleb128 0x7c
+	.long	.LASF1310
+	.byte	0xa
+	.byte	0x57
+	.long	0x7b01
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -132
+	.byte	0
+	.byte	0
+	.byte	0
+	.uleb128 0x88
+	.long	0x7c38
+	.byte	0x5f
 	.quad	.LFB3347
 	.quad	.LFE3347-.LFB3347
 	.uleb128 0x1
 	.byte	0x9c
-	.uleb128 0x88
-	.long	0x7b45
-	.byte	0x35
+	.uleb128 0x89
+	.long	0x7c5a
+	.byte	0x68
 	.quad	.LFB3348
 	.quad	.LFE3348-.LFB3348
 	.uleb128 0x1
@@ -20554,35 +20905,35 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x784e
 	.byte	0x1f
 	.byte	0
-	.long	0x84b3
-	.long	0x84ca
+	.long	0x8661
+	.long	0x8678
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x84ca
+	.long	.LASF1289
+	.long	0x8678
 	.uleb128 0x82
-	.long	.LASF1241
+	.long	.LASF1261
 	.byte	0xb
 	.byte	0x1f
 	.long	0x256a
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b56
+	.long	0x7c6b
 	.uleb128 0x83
-	.long	0x84a3
-	.long	.LASF1287
+	.long	0x8651
+	.long	.LASF1311
 	.quad	.LFB3351
 	.quad	.LFE3351-.LFB3351
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x84f3
-	.long	0x8506
+	.long	0x86a1
+	.long	0x86b4
 	.uleb128 0x84
-	.long	0x84b3
+	.long	0x8661
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.uleb128 0x84
-	.long	0x84bd
+	.long	0x866b
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -64
@@ -20591,43 +20942,43 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7869
 	.byte	0x24
 	.byte	0
-	.long	0x8516
-	.long	0x8539
+	.long	0x86c4
+	.long	0x86e7
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x84ca
+	.long	.LASF1289
+	.long	0x8678
 	.uleb128 0x82
-	.long	.LASF1288
+	.long	.LASF1312
 	.byte	0xb
 	.byte	0x24
 	.long	0x256a
 	.uleb128 0x82
-	.long	.LASF1241
+	.long	.LASF1261
 	.byte	0xb
 	.byte	0x24
 	.long	0x256a
 	.byte	0
 	.uleb128 0x83
-	.long	0x8506
-	.long	.LASF1289
+	.long	0x86b4
+	.long	.LASF1313
 	.quad	.LFB3354
 	.quad	.LFE3354-.LFB3354
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x855d
-	.long	0x857a
+	.long	0x870b
+	.long	0x8728
 	.uleb128 0x84
-	.long	0x8516
+	.long	0x86c4
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.uleb128 0x84
-	.long	0x8520
+	.long	0x86ce
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -64
 	.uleb128 0x84
-	.long	0x852c
+	.long	0x86da
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -72
@@ -20639,11 +20990,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3356-.LFB3356
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x859b
-	.long	0x85a9
+	.long	0x8749
+	.long	0x8757
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x84ca
+	.long	.LASF1289
+	.long	0x8678
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20652,25 +21003,25 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x78ee
 	.byte	0x25
 	.byte	0
-	.long	0x85b9
-	.long	0x85c4
+	.long	0x8767
+	.long	0x8772
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x85c4
+	.long	.LASF1289
+	.long	0x8772
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b74
+	.long	0x7c89
 	.uleb128 0x83
-	.long	0x85a9
-	.long	.LASF1290
+	.long	0x8757
+	.long	.LASF1314
 	.quad	.LFB3358
 	.quad	.LFE3358-.LFB3358
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x85ed
-	.long	0x85f7
+	.long	0x879b
+	.long	0x87a5
 	.uleb128 0x84
-	.long	0x85b9
+	.long	0x8767
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
@@ -20682,11 +21033,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3360-.LFB3360
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8618
-	.long	0x8635
+	.long	0x87c6
+	.long	0x87e3
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x85c4
+	.long	.LASF1289
+	.long	0x8772
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20707,11 +21058,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3361-.LFB3361
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8656
-	.long	0x8673
+	.long	0x8804
+	.long	0x8821
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x85c4
+	.long	.LASF1289
+	.long	0x8772
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20732,11 +21083,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3362-.LFB3362
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8694
-	.long	0x86b1
+	.long	0x8842
+	.long	0x885f
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x85c4
+	.long	.LASF1289
+	.long	0x8772
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20757,11 +21108,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3363-.LFB3363
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x86d2
-	.long	0x86e0
+	.long	0x8880
+	.long	0x888e
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x85c4
+	.long	.LASF1289
+	.long	0x8772
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -32
@@ -20770,25 +21121,25 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7994
 	.byte	0x1d
 	.byte	0
-	.long	0x86f0
-	.long	0x86fb
+	.long	0x889e
+	.long	0x88a9
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x86fb
+	.long	.LASF1289
+	.long	0x88a9
 	.byte	0
 	.uleb128 0xf
-	.long	0x7bea
+	.long	0x7cff
 	.uleb128 0x83
-	.long	0x86e0
-	.long	.LASF1291
+	.long	0x888e
+	.long	.LASF1315
 	.quad	.LFB3365
 	.quad	.LFE3365-.LFB3365
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8724
-	.long	0x872e
+	.long	0x88d2
+	.long	0x88dc
 	.uleb128 0x84
-	.long	0x86f0
+	.long	0x889e
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20800,11 +21151,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3367-.LFB3367
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x874f
-	.long	0x875d
+	.long	0x88fd
+	.long	0x890b
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x86fb
+	.long	.LASF1289
+	.long	0x88a9
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20816,16 +21167,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3368-.LFB3368
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x877e
-	.long	0x879a
+	.long	0x892c
+	.long	0x8948
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x86fb
+	.long	.LASF1289
+	.long	0x88a9
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.uleb128 0x7a
-	.long	.LASF1292
+	.long	.LASF1316
 	.byte	0xd
 	.byte	0x25
 	.long	0x285
@@ -20840,16 +21191,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3369-.LFB3369
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x87bb
-	.long	0x87d7
+	.long	0x8969
+	.long	0x8985
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x86fb
+	.long	.LASF1289
+	.long	0x88a9
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.uleb128 0x7a
-	.long	.LASF1292
+	.long	.LASF1316
 	.byte	0xd
 	.byte	0x29
 	.long	0x285
@@ -20861,25 +21212,25 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7a43
 	.byte	0x2d
 	.byte	0
-	.long	0x87e7
-	.long	0x87f2
+	.long	0x8995
+	.long	0x89a0
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x87f2
+	.long	.LASF1289
+	.long	0x89a0
 	.byte	0
 	.uleb128 0xf
-	.long	0x7bf0
+	.long	0x7d05
 	.uleb128 0x83
-	.long	0x87d7
-	.long	.LASF1293
+	.long	0x8985
+	.long	.LASF1317
 	.quad	.LFB3372
 	.quad	.LFE3372-.LFB3372
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x881b
-	.long	0x8825
+	.long	0x89c9
+	.long	0x89d3
 	.uleb128 0x84
-	.long	0x87e7
+	.long	0x8995
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20891,11 +21242,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3374-.LFB3374
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8846
-	.long	0x8870
+	.long	0x89f4
+	.long	0x8a1e
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x87f2
+	.long	.LASF1289
+	.long	0x89a0
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -20908,7 +21259,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -32
 	.uleb128 0x7a
-	.long	.LASF1294
+	.long	.LASF1318
 	.byte	0xe
 	.byte	0x31
 	.long	0x285
@@ -20923,32 +21274,32 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3375-.LFB3375
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8891
-	.long	0x889f
+	.long	0x8a3f
+	.long	0x8a4d
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x87f2
+	.long	.LASF1289
+	.long	0x89a0
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.byte	0
-	.uleb128 0x89
+	.uleb128 0x8a
 	.long	0x7ab5
 	.byte	0x39
 	.quad	.LFB3376
 	.quad	.LFE3376-.LFB3376
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x88c0
-	.long	0x8906
+	.long	0x8a6e
+	.long	0x8ab4
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x87f2
+	.long	.LASF1289
+	.long	0x89a0
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.uleb128 0x7a
-	.long	.LASF1295
+	.long	.LASF1319
 	.byte	0xe
 	.byte	0x39
 	.long	0x285
@@ -20956,7 +21307,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -28
 	.uleb128 0x7a
-	.long	.LASF1296
+	.long	.LASF1320
 	.byte	0xe
 	.byte	0x39
 	.long	0x285
@@ -20964,7 +21315,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -32
 	.uleb128 0x7a
-	.long	.LASF1297
+	.long	.LASF1321
 	.byte	0xe
 	.byte	0x39
 	.long	0x285
@@ -20972,7 +21323,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -36
 	.uleb128 0x7a
-	.long	.LASF1298
+	.long	.LASF1322
 	.byte	0xe
 	.byte	0x39
 	.long	0x470f
@@ -20987,17 +21338,17 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3377-.LFB3377
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8927
-	.long	0x8935
+	.long	0x8ad5
+	.long	0x8ae3
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x87f2
+	.long	.LASF1289
+	.long	0x89a0
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.byte	0
-	.uleb128 0x8a
-	.long	.LASF1299
+	.uleb128 0x8b
+	.long	.LASF1323
 	.byte	0xf
 	.byte	0x21
 	.long	0x285
@@ -21005,9 +21356,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3378-.LFB3378
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8ae5
+	.long	0x8c93
 	.uleb128 0x7a
-	.long	.LASF1300
+	.long	.LASF1324
 	.byte	0xf
 	.byte	0x21
 	.long	0x285
@@ -21015,7 +21366,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -740
 	.uleb128 0x7a
-	.long	.LASF1301
+	.long	.LASF1325
 	.byte	0xf
 	.byte	0x21
 	.long	0x4194
@@ -21023,10 +21374,10 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -752
 	.uleb128 0x7e
-	.quad	.LBB23
-	.quad	.LBE23-.LBB23
+	.quad	.LBB29
+	.quad	.LBE29-.LBB29
 	.uleb128 0x7c
-	.long	.LASF1284
+	.long	.LASF1304
 	.byte	0xf
 	.byte	0x23
 	.long	0x4a23
@@ -21034,7 +21385,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -536
 	.uleb128 0x7c
-	.long	.LASF1302
+	.long	.LASF1326
 	.byte	0xf
 	.byte	0x2b
 	.long	0x256a
@@ -21042,7 +21393,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -704
 	.uleb128 0x7c
-	.long	.LASF1303
+	.long	.LASF1327
 	.byte	0xf
 	.byte	0x2c
 	.long	0x256a
@@ -21050,7 +21401,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -688
 	.uleb128 0x7c
-	.long	.LASF1304
+	.long	.LASF1328
 	.byte	0xf
 	.byte	0x2e
 	.long	0x774b
@@ -21058,7 +21409,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -528
 	.uleb128 0x7c
-	.long	.LASF1305
+	.long	.LASF1329
 	.byte	0xf
 	.byte	0x2f
 	.long	0x774b
@@ -21066,7 +21417,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -512
 	.uleb128 0x7c
-	.long	.LASF1306
+	.long	.LASF1330
 	.byte	0xf
 	.byte	0x31
 	.long	0x7836
@@ -21082,26 +21433,26 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -400
 	.uleb128 0x7c
-	.long	.LASF1307
+	.long	.LASF1331
 	.byte	0xf
 	.byte	0x3e
-	.long	0x8af5
+	.long	0x8ca3
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZ4mainE20g_vertex_buffer_data
 	.uleb128 0x7c
-	.long	.LASF1308
+	.long	.LASF1332
 	.byte	0xf
 	.byte	0x45
-	.long	0x8ae5
+	.long	0x8c93
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZ4mainE19g_color_buffer_data
 	.uleb128 0x7c
-	.long	.LASF1309
+	.long	.LASF1333
 	.byte	0xf
 	.byte	0x4a
-	.long	0x8afa
+	.long	0x8ca8
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZ4mainE16g_uv_buffer_data
@@ -21114,7 +21465,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -720
 	.uleb128 0x7c
-	.long	.LASF1310
+	.long	.LASF1334
 	.byte	0xf
 	.byte	0x54
 	.long	0x79ff
@@ -21122,7 +21473,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -496
 	.uleb128 0x7c
-	.long	.LASF1311
+	.long	.LASF1335
 	.byte	0xf
 	.byte	0x5a
 	.long	0x79ff
@@ -21130,7 +21481,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -464
 	.uleb128 0x7c
-	.long	.LASF1312
+	.long	.LASF1336
 	.byte	0xf
 	.byte	0x60
 	.long	0x79ff
@@ -21138,7 +21489,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -432
 	.uleb128 0x7c
-	.long	.LASF1313
+	.long	.LASF1337
 	.byte	0xf
 	.byte	0x66
 	.long	0x6e7f
@@ -21146,7 +21497,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -352
 	.uleb128 0x7c
-	.long	.LASF1314
+	.long	.LASF1338
 	.byte	0xf
 	.byte	0x67
 	.long	0x6e7f
@@ -21154,7 +21505,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -288
 	.uleb128 0x7c
-	.long	.LASF1315
+	.long	.LASF1339
 	.byte	0xf
 	.byte	0x6c
 	.long	0x6e7f
@@ -21170,7 +21521,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -160
 	.uleb128 0x7c
-	.long	.LASF1316
+	.long	.LASF1340
 	.byte	0xf
 	.byte	0x70
 	.long	0x46eb
@@ -21178,7 +21529,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -712
 	.uleb128 0x7c
-	.long	.LASF1317
+	.long	.LASF1341
 	.byte	0xf
 	.byte	0x71
 	.long	0x46eb
@@ -21186,8 +21537,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -708
 	.uleb128 0x7e
-	.quad	.LBB24
-	.quad	.LBE24-.LBB24
+	.quad	.LBB30
+	.quad	.LBE30-.LBB30
 	.uleb128 0x7d
 	.string	"i"
 	.byte	0xf
@@ -21201,16 +21552,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.uleb128 0xc
 	.long	0x3121
-	.long	0x8af5
+	.long	0x8ca3
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x8
 	.byte	0
 	.uleb128 0xf
-	.long	0x8ae5
+	.long	0x8c93
 	.uleb128 0xc
 	.long	0x3121
-	.long	0x8b0a
+	.long	0x8cb8
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x5
@@ -21221,7 +21572,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3433-.LFB3433
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8b61
+	.long	0x8d0f
 	.uleb128 0x3b
 	.long	.LASF924
 	.long	0x3121
@@ -21229,16 +21580,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"x"
 	.byte	0x3
 	.byte	0x8e
-	.long	0x8b61
+	.long	0x8d0f
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.uleb128 0x7e
-	.quad	.LBB25
-	.quad	.LBE25-.LBB25
-	.uleb128 0x8b
-	.long	.LASF1332
-	.long	0x8b76
+	.quad	.LBB31
+	.quad	.LBE31-.LBB31
+	.uleb128 0x8c
+	.long	.LASF1356
+	.long	0x8d24
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZN3glm4sqrtIfEET_RKS1_E19__PRETTY_FUNCTION__
@@ -21248,20 +21599,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x701f
 	.uleb128 0xc
 	.long	0x27e
-	.long	0x8b76
+	.long	0x8d24
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x38
 	.byte	0
 	.uleb128 0xf
-	.long	0x8b66
+	.long	0x8d14
 	.uleb128 0x77
 	.long	0x6d4a
 	.quad	.LFB3454
 	.quad	.LFE3454-.LFB3454
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8bc0
+	.long	0x8d6e
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -21273,7 +21624,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v"
 	.byte	0x10
 	.value	0x269
-	.long	0x8bc0
+	.long	0x8d6e
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
@@ -21281,7 +21632,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"s"
 	.byte	0x10
 	.value	0x26a
-	.long	0x8bc5
+	.long	0x8d73
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
@@ -21290,40 +21641,40 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7042
 	.uleb128 0xf
 	.long	0x701f
-	.uleb128 0x8c
+	.uleb128 0x8d
 	.long	0x4dc7
 	.byte	0x2
-	.long	0x8bd9
-	.long	0x8bee
+	.long	0x8d87
+	.long	0x8d9c
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x8bee
-	.uleb128 0x8d
+	.long	.LASF1289
+	.long	0x8d9c
+	.uleb128 0x8e
 	.string	"v"
 	.byte	0x10
 	.byte	0x43
-	.long	0x8bf3
+	.long	0x8da1
 	.byte	0
 	.uleb128 0xf
 	.long	0x703c
 	.uleb128 0xf
 	.long	0x7042
-	.uleb128 0x8e
-	.long	0x8bca
-	.long	.LASF1318
+	.uleb128 0x8f
+	.long	0x8d78
+	.long	.LASF1342
 	.quad	.LFB3463
 	.quad	.LFE3463-.LFB3463
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8c1c
-	.long	0x8c2f
+	.long	0x8dca
+	.long	0x8ddd
 	.uleb128 0x84
-	.long	0x8bd9
+	.long	0x8d87
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.uleb128 0x84
-	.long	0x8be3
+	.long	0x8d91
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -32
@@ -21334,7 +21685,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3537-.LFB3537
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8ca9
+	.long	0x8e57
 	.uleb128 0x3b
 	.long	.LASF339
 	.long	0x27e
@@ -21344,27 +21695,27 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x3b
 	.long	.LASF341
 	.long	0x93d
-	.uleb128 0x8f
-	.long	.LASF1319
+	.uleb128 0x90
+	.long	.LASF1343
 	.byte	0x11
 	.value	0x93d
-	.long	0x8ca9
+	.long	0x8e57
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
-	.uleb128 0x8f
-	.long	.LASF1320
+	.uleb128 0x90
+	.long	.LASF1344
 	.byte	0x11
 	.value	0x93e
-	.long	0x8cae
+	.long	0x8e5c
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.uleb128 0x7e
-	.quad	.LBB27
-	.quad	.LBE27-.LBB27
-	.uleb128 0x90
-	.long	.LASF1321
+	.quad	.LBB33
+	.quad	.LBE33-.LBB33
+	.uleb128 0x91
+	.long	.LASF1345
 	.byte	0x11
 	.value	0x940
 	.long	0xb66
@@ -21378,37 +21729,37 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x4611
 	.uleb128 0xf
 	.long	0x4611
-	.uleb128 0x8c
+	.uleb128 0x8d
 	.long	0x4ff5
 	.byte	0x2
-	.long	0x8cc2
-	.long	0x8ccd
+	.long	0x8e70
+	.long	0x8e7b
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x8ccd
+	.long	.LASF1289
+	.long	0x8e7b
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b62
-	.uleb128 0x8e
-	.long	0x8cb3
-	.long	.LASF1322
-	.quad	.LFB3545
-	.quad	.LFE3545-.LFB3545
+	.long	0x7c77
+	.uleb128 0x8f
+	.long	0x8e61
+	.long	.LASF1346
+	.quad	.LFB3546
+	.quad	.LFE3546-.LFB3546
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8cf6
-	.long	0x8d00
+	.long	0x8ea4
+	.long	0x8eae
 	.uleb128 0x84
-	.long	0x8cc2
+	.long	0x8e70
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.byte	0
-	.uleb128 0x8c
+	.uleb128 0x8d
 	.long	0x5120
 	.byte	0x2
-	.long	0x8d24
-	.long	0x8d4d
+	.long	0x8ed2
+	.long	0x8efb
 	.uleb128 0x3e
 	.string	"U"
 	.long	0x285
@@ -21419,23 +21770,23 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"W"
 	.long	0x285
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x8ccd
-	.uleb128 0x8d
+	.long	.LASF1289
+	.long	0x8e7b
+	.uleb128 0x8e
 	.string	"x"
 	.byte	0x12
 	.byte	0x7d
-	.long	0x8d4d
-	.uleb128 0x8d
+	.long	0x8efb
+	.uleb128 0x8e
 	.string	"y"
 	.byte	0x12
 	.byte	0x7e
-	.long	0x8d52
-	.uleb128 0x8d
+	.long	0x8f00
+	.uleb128 0x8e
 	.string	"z"
 	.byte	0x12
 	.byte	0x7f
-	.long	0x8d57
+	.long	0x8f05
 	.byte	0
 	.uleb128 0xf
 	.long	0x704e
@@ -21443,15 +21794,15 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x704e
 	.uleb128 0xf
 	.long	0x704e
-	.uleb128 0x8e
-	.long	0x8d00
-	.long	.LASF1323
-	.quad	.LFB3548
-	.quad	.LFE3548-.LFB3548
+	.uleb128 0x8f
+	.long	0x8eae
+	.long	.LASF1347
+	.quad	.LFB3549
+	.quad	.LFE3549-.LFB3549
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8d95
-	.long	0x8dba
+	.long	0x8f43
+	.long	0x8f68
 	.uleb128 0x3e
 	.string	"U"
 	.long	0x285
@@ -21462,37 +21813,37 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"W"
 	.long	0x285
 	.uleb128 0x84
-	.long	0x8d24
+	.long	0x8ed2
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.uleb128 0x84
-	.long	0x8d2e
+	.long	0x8edc
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -32
 	.uleb128 0x84
-	.long	0x8d38
+	.long	0x8ee6
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -40
 	.uleb128 0x84
-	.long	0x8d42
+	.long	0x8ef0
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
 	.byte	0
-	.uleb128 0x91
+	.uleb128 0x92
 	.long	0x507c
-	.quad	.LFB3550
-	.quad	.LFE3550-.LFB3550
+	.quad	.LFB3551
+	.quad	.LFE3551-.LFB3551
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8dda
-	.long	0x8df4
+	.long	0x8f88
+	.long	0x8fa2
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x8ccd
+	.long	.LASF1289
+	.long	0x8e7b
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -21500,20 +21851,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v"
 	.byte	0x12
 	.byte	0xbb
-	.long	0x8df4
+	.long	0x8fa2
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -32
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x77
 	.long	0x6edd
-	.quad	.LFB3551
-	.quad	.LFE3551-.LFB3551
+	.quad	.LFB3552
+	.quad	.LFE3552-.LFB3552
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8ea3
+	.long	0x9051
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -21525,15 +21876,15 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"eye"
 	.byte	0x13
 	.value	0x1aa
-	.long	0x8ea3
+	.long	0x9051
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -112
-	.uleb128 0x8f
-	.long	.LASF1324
+	.uleb128 0x90
+	.long	.LASF1348
 	.byte	0x13
 	.value	0x1ab
-	.long	0x8ea8
+	.long	0x9056
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -120
@@ -21541,14 +21892,14 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"up"
 	.byte	0x13
 	.value	0x1ac
-	.long	0x8ead
+	.long	0x905b
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -128
 	.uleb128 0x7e
-	.quad	.LBB30
-	.quad	.LBE30-.LBB30
-	.uleb128 0x92
+	.quad	.LBB36
+	.quad	.LBE36-.LBB36
+	.uleb128 0x93
 	.string	"f"
 	.byte	0x13
 	.value	0x1af
@@ -21556,7 +21907,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -80
-	.uleb128 0x92
+	.uleb128 0x93
 	.string	"s"
 	.byte	0x13
 	.value	0x1b0
@@ -21564,7 +21915,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -64
-	.uleb128 0x92
+	.uleb128 0x93
 	.string	"u"
 	.byte	0x13
 	.value	0x1b1
@@ -21572,8 +21923,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
-	.uleb128 0x90
-	.long	.LASF1325
+	.uleb128 0x91
+	.long	.LASF1349
 	.byte	0x13
 	.value	0x1b3
 	.long	0x516e
@@ -21584,34 +21935,34 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0xf
-	.long	0x7b68
-	.uleb128 0x8c
+	.long	0x7c7d
+	.uleb128 0x8d
 	.long	0x5058
 	.byte	0x2
-	.long	0x8ec1
-	.long	0x8eed
+	.long	0x906f
+	.long	0x909b
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x8ccd
-	.uleb128 0x8d
+	.long	.LASF1289
+	.long	0x8e7b
+	.uleb128 0x8e
 	.string	"s0"
 	.byte	0x12
 	.byte	0x6d
-	.long	0x8eed
-	.uleb128 0x8d
+	.long	0x909b
+	.uleb128 0x8e
 	.string	"s1"
 	.byte	0x12
 	.byte	0x6e
-	.long	0x8ef2
-	.uleb128 0x8d
+	.long	0x90a0
+	.uleb128 0x8e
 	.string	"s2"
 	.byte	0x12
 	.byte	0x6f
-	.long	0x8ef7
+	.long	0x90a5
 	.byte	0
 	.uleb128 0xf
 	.long	0x701f
@@ -21619,51 +21970,51 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x701f
 	.uleb128 0xf
 	.long	0x701f
-	.uleb128 0x8e
-	.long	0x8eb2
-	.long	.LASF1326
-	.quad	.LFB3556
-	.quad	.LFE3556-.LFB3556
+	.uleb128 0x8f
+	.long	0x9060
+	.long	.LASF1350
+	.quad	.LFB3557
+	.quad	.LFE3557-.LFB3557
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8f20
-	.long	0x8f45
+	.long	0x90ce
+	.long	0x90f3
 	.uleb128 0x84
-	.long	0x8ec1
+	.long	0x906f
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.uleb128 0x84
-	.long	0x8ecb
+	.long	0x9079
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -32
 	.uleb128 0x84
-	.long	0x8ed6
+	.long	0x9084
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -40
 	.uleb128 0x84
-	.long	0x8ee1
+	.long	0x908f
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
 	.byte	0
 	.uleb128 0x75
 	.long	0x6f10
-	.quad	.LFB3561
-	.quad	.LFE3561-.LFB3561
+	.quad	.LFB3562
+	.quad	.LFE3562-.LFB3562
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x8f78
+	.long	0x9126
 	.uleb128 0x3b
 	.long	.LASF924
 	.long	0x3121
 	.uleb128 0x7a
-	.long	.LASF1327
+	.long	.LASF1351
 	.byte	0x14
 	.byte	0x27
-	.long	0x8f78
+	.long	0x9126
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -21672,52 +22023,52 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x701f
 	.uleb128 0x77
 	.long	0x6f32
-	.quad	.LFB3562
-	.quad	.LFE3562-.LFB3562
+	.quad	.LFB3563
+	.quad	.LFE3563-.LFB3563
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9030
+	.long	0x91de
 	.uleb128 0x3b
 	.long	.LASF931
 	.long	0x3121
 	.uleb128 0x7a
-	.long	.LASF1328
+	.long	.LASF1352
 	.byte	0x13
 	.byte	0xf1
-	.long	0x9030
+	.long	0x91de
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
 	.uleb128 0x7a
-	.long	.LASF1329
+	.long	.LASF1353
 	.byte	0x13
 	.byte	0xf2
-	.long	0x9035
+	.long	0x91e3
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.uleb128 0x7a
-	.long	.LASF1330
+	.long	.LASF1354
 	.byte	0x13
 	.byte	0xf3
-	.long	0x903a
+	.long	0x91e8
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -64
 	.uleb128 0x7a
-	.long	.LASF1331
+	.long	.LASF1355
 	.byte	0x13
 	.byte	0xf4
-	.long	0x903f
+	.long	0x91ed
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -72
 	.uleb128 0x7e
-	.quad	.LBB32
-	.quad	.LBE32-.LBB32
-	.uleb128 0x8b
-	.long	.LASF1332
-	.long	0x9054
+	.quad	.LBB38
+	.quad	.LBE38-.LBB38
+	.uleb128 0x8c
+	.long	.LASF1356
+	.long	0x9202
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZN3glm11perspectiveIfEENS_6detail7tmat4x4IT_LNS_9precisionE0EEERKS3_S7_S7_S7_E19__PRETTY_FUNCTION__
@@ -21729,16 +22080,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
-	.uleb128 0x90
-	.long	.LASF1333
+	.uleb128 0x91
+	.long	.LASF1357
 	.byte	0x13
 	.value	0x101
 	.long	0x3121
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -20
-	.uleb128 0x90
-	.long	.LASF1325
+	.uleb128 0x91
+	.long	.LASF1349
 	.byte	0x13
 	.value	0x103
 	.long	0x516e
@@ -21758,62 +22109,62 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x701f
 	.uleb128 0xc
 	.long	0x27e
-	.long	0x9054
+	.long	0x9202
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x93
 	.byte	0
 	.uleb128 0xf
-	.long	0x9044
-	.uleb128 0x8c
+	.long	0x91f2
+	.uleb128 0x8d
 	.long	0x5216
 	.byte	0x2
-	.long	0x9068
-	.long	0x908c
+	.long	0x9216
+	.long	0x923a
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x908c
-	.uleb128 0x8d
+	.long	.LASF1289
+	.long	0x923a
+	.uleb128 0x8e
 	.string	"s"
 	.byte	0x15
 	.byte	0x70
-	.long	0x9091
-	.uleb128 0x93
+	.long	0x923f
 	.uleb128 0x94
-	.long	.LASF1334
+	.uleb128 0x95
+	.long	.LASF1358
 	.byte	0x15
 	.byte	0x73
 	.long	0x549e
 	.byte	0
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b90
+	.long	0x7ca5
 	.uleb128 0xf
 	.long	0x701f
 	.uleb128 0x83
-	.long	0x9059
-	.long	.LASF1335
-	.quad	.LFB3564
-	.quad	.LFE3564-.LFB3564
+	.long	0x9207
+	.long	.LASF1359
+	.quad	.LFB3565
+	.quad	.LFE3565-.LFB3565
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x90ba
-	.long	0x90ea
+	.long	0x9268
+	.long	0x9298
 	.uleb128 0x84
-	.long	0x9068
+	.long	0x9216
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -72
 	.uleb128 0x84
-	.long	0x9072
+	.long	0x9220
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -80
 	.uleb128 0x7e
-	.quad	.LBB34
-	.quad	.LBE34-.LBB34
-	.uleb128 0x95
-	.long	0x907e
+	.quad	.LBB40
+	.quad	.LBE40-.LBB40
+	.uleb128 0x96
+	.long	0x922c
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -52
@@ -21821,11 +22172,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.uleb128 0x77
 	.long	0x6d78
-	.quad	.LFB3566
-	.quad	.LFE3566-.LFB3566
+	.quad	.LFB3567
+	.quad	.LFE3567-.LFB3567
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x91df
+	.long	0x938d
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -21837,7 +22188,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"m1"
 	.byte	0x15
 	.value	0x30e
-	.long	0x91df
+	.long	0x938d
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -272
@@ -21845,79 +22196,79 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"m2"
 	.byte	0x15
 	.value	0x30f
-	.long	0x91e4
+	.long	0x9392
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -280
 	.uleb128 0x7e
-	.quad	.LBB35
-	.quad	.LBE35-.LBB35
-	.uleb128 0x90
-	.long	.LASF1336
+	.quad	.LBB41
+	.quad	.LBE41-.LBB41
+	.uleb128 0x91
+	.long	.LASF1360
 	.byte	0x15
 	.value	0x312
 	.long	0x52be
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -256
-	.uleb128 0x90
-	.long	.LASF1337
+	.uleb128 0x91
+	.long	.LASF1361
 	.byte	0x15
 	.value	0x313
 	.long	0x52be
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -240
-	.uleb128 0x90
-	.long	.LASF1338
+	.uleb128 0x91
+	.long	.LASF1362
 	.byte	0x15
 	.value	0x314
 	.long	0x52be
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -224
-	.uleb128 0x90
-	.long	.LASF1339
+	.uleb128 0x91
+	.long	.LASF1363
 	.byte	0x15
 	.value	0x315
 	.long	0x52be
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -208
-	.uleb128 0x90
-	.long	.LASF1340
+	.uleb128 0x91
+	.long	.LASF1364
 	.byte	0x15
 	.value	0x317
 	.long	0x52be
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -192
-	.uleb128 0x90
-	.long	.LASF1341
+	.uleb128 0x91
+	.long	.LASF1365
 	.byte	0x15
 	.value	0x318
 	.long	0x52be
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -176
-	.uleb128 0x90
-	.long	.LASF1342
+	.uleb128 0x91
+	.long	.LASF1366
 	.byte	0x15
 	.value	0x319
 	.long	0x52be
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -160
-	.uleb128 0x90
-	.long	.LASF1343
+	.uleb128 0x91
+	.long	.LASF1367
 	.byte	0x15
 	.value	0x31a
 	.long	0x52be
 	.uleb128 0x3
 	.byte	0x91
 	.sleb128 -144
-	.uleb128 0x90
-	.long	.LASF1325
+	.uleb128 0x91
+	.long	.LASF1349
 	.byte	0x15
 	.value	0x31c
 	.long	0x516e
@@ -21928,20 +22279,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b96
+	.long	0x7cab
 	.uleb128 0xf
-	.long	0x7b96
-	.uleb128 0x96
+	.long	0x7cab
+	.uleb128 0x97
 	.long	0x53b5
-	.quad	.LFB3567
-	.quad	.LFE3567-.LFB3567
+	.quad	.LFB3568
+	.quad	.LFE3568-.LFB3568
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9209
-	.long	0x9249
+	.long	0x93b7
+	.long	0x93f7
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x908c
+	.long	.LASF1289
+	.long	0x923a
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -21954,11 +22305,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -28
 	.uleb128 0x7e
-	.quad	.LBB36
-	.quad	.LBE36-.LBB36
-	.uleb128 0x8b
-	.long	.LASF1332
-	.long	0x9259
+	.quad	.LBB42
+	.quad	.LBE42-.LBB42
+	.uleb128 0x8c
+	.long	.LASF1356
+	.long	0x9407
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZN3glm6detail7tmat4x4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__
@@ -21966,24 +22317,24 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.uleb128 0xc
 	.long	0x27e
-	.long	0x9259
+	.long	0x9407
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0xfe
 	.byte	0
 	.uleb128 0xf
-	.long	0x9249
-	.uleb128 0x96
+	.long	0x93f7
+	.uleb128 0x97
 	.long	0x4d6e
-	.quad	.LFB3568
-	.quad	.LFE3568-.LFB3568
+	.quad	.LFB3569
+	.quad	.LFE3569-.LFB3569
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x927e
-	.long	0x92be
+	.long	0x942c
+	.long	0x946c
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x8bee
+	.long	.LASF1289
+	.long	0x8d9c
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -21996,11 +22347,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -28
 	.uleb128 0x7e
-	.quad	.LBB37
-	.quad	.LBE37-.LBB37
-	.uleb128 0x8b
-	.long	.LASF1332
-	.long	0x92ce
+	.quad	.LBB43
+	.quad	.LBE43-.LBB43
+	.uleb128 0x8c
+	.long	.LASF1356
+	.long	0x947c
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZN3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__
@@ -22008,41 +22359,41 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.uleb128 0xc
 	.long	0x27e
-	.long	0x92ce
+	.long	0x947c
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x83
 	.byte	0
 	.uleb128 0xf
-	.long	0x92be
-	.uleb128 0x8c
+	.long	0x946c
+	.uleb128 0x8d
 	.long	0x4e15
 	.byte	0x2
-	.long	0x92e2
-	.long	0x9319
+	.long	0x9490
+	.long	0x94c7
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x8bee
-	.uleb128 0x8d
+	.long	.LASF1289
+	.long	0x8d9c
+	.uleb128 0x8e
 	.string	"s1"
 	.byte	0x10
 	.byte	0x72
-	.long	0x9319
-	.uleb128 0x8d
+	.long	0x94c7
+	.uleb128 0x8e
 	.string	"s2"
 	.byte	0x10
 	.byte	0x73
-	.long	0x931e
-	.uleb128 0x8d
+	.long	0x94cc
+	.uleb128 0x8e
 	.string	"s3"
 	.byte	0x10
 	.byte	0x74
-	.long	0x9323
-	.uleb128 0x8d
+	.long	0x94d1
+	.uleb128 0x8e
 	.string	"s4"
 	.byte	0x10
 	.byte	0x75
-	.long	0x9328
+	.long	0x94d6
 	.byte	0
 	.uleb128 0xf
 	.long	0x701f
@@ -22052,48 +22403,48 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x701f
 	.uleb128 0xf
 	.long	0x701f
-	.uleb128 0x8e
-	.long	0x92d3
-	.long	.LASF1344
-	.quad	.LFB3608
-	.quad	.LFE3608-.LFB3608
+	.uleb128 0x8f
+	.long	0x9481
+	.long	.LASF1368
+	.quad	.LFB3609
+	.quad	.LFE3609-.LFB3609
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9351
-	.long	0x937f
+	.long	0x94ff
+	.long	0x952d
 	.uleb128 0x84
-	.long	0x92e2
+	.long	0x9490
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.uleb128 0x84
-	.long	0x92ec
+	.long	0x949a
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -32
 	.uleb128 0x84
-	.long	0x92f7
+	.long	0x94a5
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -40
 	.uleb128 0x84
-	.long	0x9302
+	.long	0x94b0
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
 	.uleb128 0x84
-	.long	0x930d
+	.long	0x94bb
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.byte	0
 	.uleb128 0x77
 	.long	0x6da6
-	.quad	.LFB3660
-	.quad	.LFE3660-.LFB3660
+	.quad	.LFB3661
+	.quad	.LFE3661-.LFB3661
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x93c6
+	.long	0x9574
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -22105,7 +22456,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v1"
 	.byte	0x12
 	.value	0x21c
-	.long	0x93c6
+	.long	0x9574
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
@@ -22113,22 +22464,22 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v2"
 	.byte	0x12
 	.value	0x21d
-	.long	0x93cb
+	.long	0x9579
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x77
 	.long	0x6f63
-	.quad	.LFB3661
-	.quad	.LFE3661-.LFB3661
+	.quad	.LFB3662
+	.quad	.LFE3662-.LFB3662
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9429
+	.long	0x95d7
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -22140,14 +22491,14 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"x"
 	.byte	0x16
 	.byte	0xfe
-	.long	0x9429
+	.long	0x95d7
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
 	.uleb128 0x7e
-	.quad	.LBB39
-	.quad	.LBE39-.LBB39
-	.uleb128 0x92
+	.quad	.LBB45
+	.quad	.LBE45-.LBB45
+	.uleb128 0x93
 	.string	"sqr"
 	.byte	0x16
 	.value	0x103
@@ -22158,14 +22509,14 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x77
 	.long	0x6f8b
-	.quad	.LFB3662
-	.quad	.LFE3662-.LFB3662
+	.quad	.LFB3663
+	.quad	.LFE3663-.LFB3663
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9471
+	.long	0x961f
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -22177,7 +22528,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"x"
 	.byte	0x16
 	.byte	0xd6
-	.long	0x9471
+	.long	0x961f
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
@@ -22185,22 +22536,22 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"y"
 	.byte	0x16
 	.byte	0xd7
-	.long	0x9476
+	.long	0x9624
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x77
 	.long	0x6fb8
-	.quad	.LFB3663
-	.quad	.LFE3663-.LFB3663
+	.quad	.LFB3664
+	.quad	.LFE3664-.LFB3664
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x94c7
+	.long	0x9675
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -22215,7 +22566,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"x"
 	.byte	0x16
 	.byte	0xb9
-	.long	0x94c7
+	.long	0x9675
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -22223,50 +22574,50 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"y"
 	.byte	0x16
 	.byte	0xba
-	.long	0x94cc
+	.long	0x967a
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -32
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0xf
-	.long	0x7b68
-	.uleb128 0x8c
+	.long	0x7c7d
+	.uleb128 0x8d
 	.long	0x4db2
 	.byte	0x2
-	.long	0x94e0
-	.long	0x94eb
+	.long	0x968e
+	.long	0x9699
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x8bee
+	.long	.LASF1289
+	.long	0x8d9c
 	.byte	0
-	.uleb128 0x8e
-	.long	0x94d1
-	.long	.LASF1345
-	.quad	.LFB3665
-	.quad	.LFE3665-.LFB3665
+	.uleb128 0x8f
+	.long	0x967f
+	.long	.LASF1369
+	.quad	.LFB3666
+	.quad	.LFE3666-.LFB3666
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x950f
-	.long	0x9519
+	.long	0x96bd
+	.long	0x96c7
 	.uleb128 0x84
-	.long	0x94e0
+	.long	0x968e
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.byte	0
-	.uleb128 0x96
+	.uleb128 0x97
 	.long	0x53d7
-	.quad	.LFB3667
-	.quad	.LFE3667-.LFB3667
+	.quad	.LFB3668
+	.quad	.LFE3668-.LFB3668
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9539
-	.long	0x9579
+	.long	0x96e7
+	.long	0x9727
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x9579
+	.long	.LASF1289
+	.long	0x9727
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -22279,38 +22630,38 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -28
 	.uleb128 0x7e
-	.quad	.LBB41
-	.quad	.LBE41-.LBB41
-	.uleb128 0x8b
-	.long	.LASF1332
-	.long	0x958e
+	.quad	.LBB47
+	.quad	.LBE47-.LBB47
+	.uleb128 0x8c
+	.long	.LASF1356
+	.long	0x973c
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZNK3glm6detail7tmat4x4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__
 	.byte	0
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b8a
+	.long	0x7c9f
 	.uleb128 0xc
 	.long	0x27e
-	.long	0x958e
+	.long	0x973c
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0xee
 	.byte	0
 	.uleb128 0xf
-	.long	0x957e
-	.uleb128 0x91
+	.long	0x972c
+	.uleb128 0x92
 	.long	0x4e3e
-	.quad	.LFB3668
-	.quad	.LFE3668-.LFB3668
+	.quad	.LFB3669
+	.quad	.LFE3669-.LFB3669
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x95b3
-	.long	0x95cd
+	.long	0x9761
+	.long	0x977b
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x8bee
+	.long	.LASF1289
+	.long	0x8d9c
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -22318,7 +22669,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v"
 	.byte	0x10
 	.byte	0xf3
-	.long	0x95cd
+	.long	0x977b
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -32
@@ -22327,67 +22678,67 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7042
 	.uleb128 0x77
 	.long	0x6fee
-	.quad	.LFB3669
-	.quad	.LFE3669-.LFB3669
+	.quad	.LFB3670
+	.quad	.LFE3670-.LFB3670
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9605
+	.long	0x97b3
 	.uleb128 0x3b
 	.long	.LASF924
 	.long	0x3121
 	.uleb128 0x7a
-	.long	.LASF1346
+	.long	.LASF1370
 	.byte	0x14
 	.byte	0x5c
-	.long	0x9605
+	.long	0x97b3
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.byte	0
 	.uleb128 0xf
 	.long	0x701f
-	.uleb128 0x8c
+	.uleb128 0x8d
 	.long	0x51fc
 	.byte	0x2
-	.long	0x9619
-	.long	0x9629
+	.long	0x97c7
+	.long	0x97d7
 	.uleb128 0x81
-	.long	.LASF1269
-	.long	0x908c
+	.long	.LASF1289
+	.long	0x923a
 	.uleb128 0x18
 	.long	0x517a
 	.byte	0
 	.uleb128 0x83
-	.long	0x960a
-	.long	.LASF1347
-	.quad	.LFB3671
-	.quad	.LFE3671-.LFB3671
+	.long	0x97b8
+	.long	.LASF1371
+	.quad	.LFB3672
+	.quad	.LFE3672-.LFB3672
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x964d
-	.long	0x9660
+	.long	0x97fb
+	.long	0x980e
 	.uleb128 0x84
-	.long	0x9619
+	.long	0x97c7
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -40
 	.uleb128 0x84
-	.long	0x9623
+	.long	0x97d1
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -44
 	.byte	0
-	.uleb128 0x96
+	.uleb128 0x97
 	.long	0x4d90
-	.quad	.LFB3673
-	.quad	.LFE3673-.LFB3673
+	.quad	.LFB3674
+	.quad	.LFE3674-.LFB3674
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9680
-	.long	0x96c0
+	.long	0x982e
+	.long	0x986e
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x96c0
+	.long	.LASF1289
+	.long	0x986e
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
@@ -22400,11 +22751,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -28
 	.uleb128 0x7e
-	.quad	.LBB43
-	.quad	.LBE43-.LBB43
-	.uleb128 0x8b
-	.long	.LASF1332
-	.long	0x96d5
+	.quad	.LBB49
+	.quad	.LBE49-.LBB49
+	.uleb128 0x8c
+	.long	.LASF1356
+	.long	0x9883
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__
@@ -22414,20 +22765,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.long	0x7036
 	.uleb128 0xc
 	.long	0x27e
-	.long	0x96d5
+	.long	0x9883
 	.uleb128 0xd
 	.long	0x1bf
 	.byte	0x8f
 	.byte	0
 	.uleb128 0xf
-	.long	0x96c5
+	.long	0x9873
 	.uleb128 0x77
 	.long	0x6dd4
-	.quad	.LFB3674
-	.quad	.LFE3674-.LFB3674
+	.quad	.LFB3675
+	.quad	.LFE3675-.LFB3675
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9721
+	.long	0x98cf
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -22439,7 +22790,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v1"
 	.byte	0x10
 	.value	0x22f
-	.long	0x95cd
+	.long	0x977b
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
@@ -22447,48 +22798,48 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v2"
 	.byte	0x10
 	.value	0x230
-	.long	0x95cd
+	.long	0x977b
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.byte	0
-	.uleb128 0x91
+	.uleb128 0x92
 	.long	0x51b0
-	.quad	.LFB3675
-	.quad	.LFE3675-.LFB3675
-	.uleb128 0x1
-	.byte	0x9c
-	.long	0x9741
-	.long	0x974f
-	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x9579
-	.uleb128 0x2
-	.byte	0x91
-	.sleb128 -24
-	.byte	0
-	.uleb128 0x91
-	.long	0x4d51
 	.quad	.LFB3676
 	.quad	.LFE3676-.LFB3676
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x976f
-	.long	0x977d
+	.long	0x98ef
+	.long	0x98fd
 	.uleb128 0x86
-	.long	.LASF1269
-	.long	0x96c0
+	.long	.LASF1289
+	.long	0x9727
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.byte	0
+	.uleb128 0x92
+	.long	0x4d51
+	.quad	.LFB3677
+	.quad	.LFE3677-.LFB3677
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x991d
+	.long	0x992b
+	.uleb128 0x86
+	.long	.LASF1289
+	.long	0x986e
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -24
 	.byte	0
 	.uleb128 0x77
 	.long	0x6e02
-	.quad	.LFB3720
-	.quad	.LFE3720-.LFB3720
+	.quad	.LFB3721
+	.quad	.LFE3721-.LFB3721
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x97c2
+	.long	0x9970
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -22500,7 +22851,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v"
 	.byte	0x12
 	.value	0x22a
-	.long	0x97c2
+	.long	0x9970
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
@@ -22508,27 +22859,27 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"s"
 	.byte	0x12
 	.value	0x22b
-	.long	0x97c7
+	.long	0x9975
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0xf
 	.long	0x701f
 	.uleb128 0x77
 	.long	0x6d13
-	.quad	.LFB3721
-	.quad	.LFE3721-.LFB3721
+	.quad	.LFB3722
+	.quad	.LFE3722-.LFB3722
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9820
+	.long	0x99ce
 	.uleb128 0x76
 	.string	"x"
 	.byte	0x16
 	.byte	0x3f
-	.long	0x9820
+	.long	0x99ce
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -40
@@ -22536,13 +22887,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"y"
 	.byte	0x16
 	.byte	0x3f
-	.long	0x9825
+	.long	0x99d3
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
 	.uleb128 0x7e
-	.quad	.LBB44
-	.quad	.LBE44-.LBB44
+	.quad	.LBB50
+	.quad	.LBE50-.LBB50
 	.uleb128 0x7d
 	.string	"tmp"
 	.byte	0x16
@@ -22554,16 +22905,16 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0x77
 	.long	0x6e30
-	.quad	.LFB3724
-	.quad	.LFE3724-.LFB3724
+	.quad	.LFB3725
+	.quad	.LFE3725-.LFB3725
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x9871
+	.long	0x9a1f
 	.uleb128 0x3e
 	.string	"T"
 	.long	0x3121
@@ -22575,7 +22926,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v1"
 	.byte	0x12
 	.value	0x244
-	.long	0x9871
+	.long	0x9a1f
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -48
@@ -22583,24 +22934,24 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"v2"
 	.byte	0x12
 	.value	0x245
-	.long	0x9876
+	.long	0x9a24
 	.uleb128 0x2
 	.byte	0x91
 	.sleb128 -56
 	.byte	0
 	.uleb128 0xf
-	.long	0x7b68
+	.long	0x7c7d
 	.uleb128 0xf
-	.long	0x7b68
-	.uleb128 0x97
-	.long	.LASF1402
-	.quad	.LFB3745
-	.quad	.LFE3745-.LFB3745
+	.long	0x7c7d
+	.uleb128 0x98
+	.long	.LASF1426
+	.quad	.LFB3746
+	.quad	.LFE3746-.LFB3746
 	.uleb128 0x1
 	.byte	0x9c
-	.long	0x98b4
+	.long	0x9a62
 	.uleb128 0x7a
-	.long	.LASF1348
+	.long	.LASF1372
 	.byte	0xf
 	.byte	0x9c
 	.long	0x285
@@ -22608,7 +22959,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -52
 	.uleb128 0x7a
-	.long	.LASF1349
+	.long	.LASF1373
 	.byte	0xf
 	.byte	0x9c
 	.long	0x285
@@ -22616,129 +22967,129 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x91
 	.sleb128 -56
 	.byte	0
-	.uleb128 0x98
-	.long	.LASF1403
-	.quad	.LFB3746
-	.quad	.LFE3746-.LFB3746
+	.uleb128 0x99
+	.long	.LASF1427
+	.quad	.LFB3747
+	.quad	.LFE3747-.LFB3747
 	.uleb128 0x1
 	.byte	0x9c
-	.uleb128 0x99
-	.long	.LASF1351
+	.uleb128 0x9a
+	.long	.LASF1375
 	.byte	0x38
 	.value	0x3ac8
 	.long	0x4746
-	.uleb128 0x99
-	.long	.LASF1352
+	.uleb128 0x9a
+	.long	.LASF1376
 	.byte	0x38
 	.value	0x3b28
 	.long	0x47b1
-	.uleb128 0x99
-	.long	.LASF1353
+	.uleb128 0x9a
+	.long	.LASF1377
 	.byte	0x38
 	.value	0x3b29
 	.long	0x47bd
-	.uleb128 0x99
-	.long	.LASF1354
+	.uleb128 0x9a
+	.long	.LASF1378
 	.byte	0x38
 	.value	0x3b2e
 	.long	0x47e9
-	.uleb128 0x99
-	.long	.LASF1355
+	.uleb128 0x9a
+	.long	.LASF1379
 	.byte	0x38
 	.value	0x3b3b
 	.long	0x4832
-	.uleb128 0x99
-	.long	.LASF1356
+	.uleb128 0x9a
+	.long	.LASF1380
 	.byte	0x38
 	.value	0x3b3e
 	.long	0x485f
-	.uleb128 0x99
-	.long	.LASF1357
+	.uleb128 0x9a
+	.long	.LASF1381
 	.byte	0x38
 	.value	0x3b3f
 	.long	0x487c
-	.uleb128 0x99
-	.long	.LASF1358
+	.uleb128 0x9a
+	.long	.LASF1382
 	.byte	0x38
 	.value	0x3b40
 	.long	0x4893
-	.uleb128 0x99
-	.long	.LASF1359
+	.uleb128 0x9a
+	.long	.LASF1383
 	.byte	0x38
 	.value	0x3b44
 	.long	0x48b4
-	.uleb128 0x99
-	.long	.LASF1360
+	.uleb128 0x9a
+	.long	.LASF1384
 	.byte	0x38
 	.value	0x3b46
 	.long	0x48c0
-	.uleb128 0x99
-	.long	.LASF1361
+	.uleb128 0x9a
+	.long	.LASF1385
 	.byte	0x38
 	.value	0x3b4c
 	.long	0x4912
-	.uleb128 0x99
-	.long	.LASF1362
+	.uleb128 0x9a
+	.long	.LASF1386
 	.byte	0x38
 	.value	0x3b4d
 	.long	0x491e
-	.uleb128 0x99
-	.long	.LASF1363
+	.uleb128 0x9a
+	.long	.LASF1387
 	.byte	0x38
 	.value	0x3b4f
 	.long	0x492a
-	.uleb128 0x99
-	.long	.LASF1364
+	.uleb128 0x9a
+	.long	.LASF1388
 	.byte	0x38
 	.value	0x3b50
 	.long	0x4936
-	.uleb128 0x99
-	.long	.LASF1365
+	.uleb128 0x9a
+	.long	.LASF1389
 	.byte	0x38
 	.value	0x3b59
 	.long	0x4942
-	.uleb128 0x99
-	.long	.LASF1366
+	.uleb128 0x9a
+	.long	.LASF1390
 	.byte	0x38
 	.value	0x3b5a
 	.long	0x494e
-	.uleb128 0x99
-	.long	.LASF1367
+	.uleb128 0x9a
+	.long	.LASF1391
 	.byte	0x38
 	.value	0x3b60
 	.long	0x4980
-	.uleb128 0x99
-	.long	.LASF1368
+	.uleb128 0x9a
+	.long	.LASF1392
 	.byte	0x38
 	.value	0x3b70
 	.long	0x49ac
-	.uleb128 0x99
-	.long	.LASF1369
+	.uleb128 0x9a
+	.long	.LASF1393
 	.byte	0x38
 	.value	0x3b71
 	.long	0x49b8
-	.uleb128 0x99
-	.long	.LASF1370
+	.uleb128 0x9a
+	.long	.LASF1394
 	.byte	0x38
 	.value	0x3b97
 	.long	0x49c4
-	.uleb128 0x99
-	.long	.LASF1371
+	.uleb128 0x9a
+	.long	.LASF1395
 	.byte	0x38
 	.value	0x3e48
 	.long	0x49fa
-	.uleb128 0x99
-	.long	.LASF1372
+	.uleb128 0x9a
+	.long	.LASF1396
 	.byte	0x38
 	.value	0x3e4a
 	.long	0x4a06
-	.uleb128 0x99
-	.long	.LASF1373
+	.uleb128 0x9a
+	.long	.LASF1397
 	.byte	0x38
 	.value	0x4671
 	.long	0x470f
 	.uleb128 0x7c
-	.long	.LASF1374
+	.long	.LASF1398
 	.byte	0xf
 	.byte	0x1c
 	.long	0x2a9
@@ -22746,88 +23097,88 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0x3
 	.quad	_ZL12window_width
 	.uleb128 0x7c
-	.long	.LASF1375
+	.long	.LASF1399
 	.byte	0xf
 	.byte	0x1d
 	.long	0x2a9
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZL13window_height
-	.uleb128 0x9a
-	.long	.LASF1376
-	.long	0x20a
 	.uleb128 0x9b
+	.long	.LASF1400
+	.long	0x20a
+	.uleb128 0x9c
 	.long	0x2b80
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZStL19piecewise_construct
-	.uleb128 0x9b
+	.uleb128 0x9c
 	.long	0x2bbb
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZStL8__ioinit
-	.uleb128 0x9c
-	.long	0x349f
-	.long	.LASF1377
-	.sleb128 -2147483648
 	.uleb128 0x9d
+	.long	0x349f
+	.long	.LASF1401
+	.sleb128 -2147483648
+	.uleb128 0x9e
 	.long	0x34aa
-	.long	.LASF1378
+	.long	.LASF1402
 	.long	0x7fffffff
-	.uleb128 0x9e
+	.uleb128 0x9f
 	.long	0x3999
-	.long	.LASF1379
+	.long	.LASF1403
 	.byte	0x26
-	.uleb128 0x9f
-	.long	0x39db
-	.long	.LASF1380
-	.value	0x134
-	.uleb128 0x9f
-	.long	0x3a1d
-	.long	.LASF1381
-	.value	0x1344
-	.uleb128 0x9e
-	.long	0x3a5f
-	.long	.LASF1382
-	.byte	0x40
-	.uleb128 0x9e
-	.long	0x3a8b
-	.long	.LASF1383
-	.byte	0x7f
-	.uleb128 0x9c
-	.long	0x3ac2
-	.long	.LASF1384
-	.sleb128 -32768
-	.uleb128 0x9f
-	.long	0x3acd
-	.long	.LASF1385
-	.value	0x7fff
-	.uleb128 0x9c
-	.long	0x3b04
-	.long	.LASF1386
-	.sleb128 -9223372036854775808
 	.uleb128 0xa0
-	.long	0x3b0f
-	.long	.LASF1387
-	.quad	0x7fffffffffffffff
+	.long	0x39db
+	.long	.LASF1404
+	.value	0x134
+	.uleb128 0xa0
+	.long	0x3a1d
+	.long	.LASF1405
+	.value	0x1344
+	.uleb128 0x9f
+	.long	0x3a5f
+	.long	.LASF1406
+	.byte	0x40
+	.uleb128 0x9f
+	.long	0x3a8b
+	.long	.LASF1407
+	.byte	0x7f
+	.uleb128 0x9d
+	.long	0x3ac2
+	.long	.LASF1408
+	.sleb128 -32768
+	.uleb128 0xa0
+	.long	0x3acd
+	.long	.LASF1409
+	.value	0x7fff
+	.uleb128 0x9d
+	.long	0x3b04
+	.long	.LASF1410
+	.sleb128 -9223372036854775808
 	.uleb128 0xa1
+	.long	0x3b0f
+	.long	.LASF1411
+	.quad	0x7fffffffffffffff
+	.uleb128 0xa2
 	.long	0x76c0
 	.byte	0x2b
-	.long	.LASF1388
+	.long	.LASF1412
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZN15ShaderGenerator11__directoryE
-	.uleb128 0xa1
-	.long	0x7b0d
+	.uleb128 0xa2
+	.long	0x7c22
 	.byte	0x20
-	.long	.LASF1389
+	.long	.LASF1413
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZN13TextureLoader16__texture_handleE
-	.uleb128 0xa1
-	.long	0x7b18
+	.uleb128 0xa2
+	.long	0x7c2d
 	.byte	0x1f
-	.long	.LASF1390
+	.long	.LASF1414
 	.uleb128 0x9
 	.byte	0x3
 	.quad	_ZN13TextureLoader8__initedE
@@ -24895,20 +25246,14 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0x87
-	.uleb128 0x2e
-	.byte	0
-	.uleb128 0x47
-	.uleb128 0x13
-	.uleb128 0x3b
 	.uleb128 0xb
+	.byte	0x1
 	.uleb128 0x11
 	.uleb128 0x1
 	.uleb128 0x12
 	.uleb128 0x7
-	.uleb128 0x40
-	.uleb128 0x18
-	.uleb128 0x2116
-	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
 	.byte	0
 	.byte	0
 	.uleb128 0x88
@@ -24924,11 +25269,28 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x7
 	.uleb128 0x40
 	.uleb128 0x18
-	.uleb128 0x2117
+	.uleb128 0x2116
 	.uleb128 0x19
 	.byte	0
 	.byte	0
 	.uleb128 0x89
+	.uleb128 0x2e
+	.byte	0
+	.uleb128 0x47
+	.uleb128 0x13
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x40
+	.uleb128 0x18
+	.uleb128 0x2117
+	.uleb128 0x19
+	.byte	0
+	.byte	0
+	.uleb128 0x8a
 	.uleb128 0x2e
 	.byte	0x1
 	.uleb128 0x47
@@ -24949,7 +25311,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x8a
+	.uleb128 0x8b
 	.uleb128 0x2e
 	.byte	0x1
 	.uleb128 0x3f
@@ -24974,7 +25336,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x8b
+	.uleb128 0x8c
 	.uleb128 0x34
 	.byte	0
 	.uleb128 0x3
@@ -24987,7 +25349,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x18
 	.byte	0
 	.byte	0
-	.uleb128 0x8c
+	.uleb128 0x8d
 	.uleb128 0x2e
 	.byte	0x1
 	.uleb128 0x47
@@ -25000,7 +25362,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x8d
+	.uleb128 0x8e
 	.uleb128 0x5
 	.byte	0
 	.uleb128 0x3
@@ -25013,7 +25375,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x8e
+	.uleb128 0x8f
 	.uleb128 0x2e
 	.byte	0x1
 	.uleb128 0x31
@@ -25034,23 +25396,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x8f
-	.uleb128 0x5
-	.byte	0
-	.uleb128 0x3
-	.uleb128 0xe
-	.uleb128 0x3a
-	.uleb128 0xb
-	.uleb128 0x3b
-	.uleb128 0x5
-	.uleb128 0x49
-	.uleb128 0x13
-	.uleb128 0x2
-	.uleb128 0x18
-	.byte	0
-	.byte	0
 	.uleb128 0x90
-	.uleb128 0x34
+	.uleb128 0x5
 	.byte	0
 	.uleb128 0x3
 	.uleb128 0xe
@@ -25065,6 +25412,21 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.byte	0
 	.byte	0
 	.uleb128 0x91
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0xe
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x92
 	.uleb128 0x2e
 	.byte	0x1
 	.uleb128 0x47
@@ -25083,7 +25445,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x92
+	.uleb128 0x93
 	.uleb128 0x34
 	.byte	0
 	.uleb128 0x3
@@ -25098,12 +25460,12 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x18
 	.byte	0
 	.byte	0
-	.uleb128 0x93
+	.uleb128 0x94
 	.uleb128 0xb
 	.byte	0x1
 	.byte	0
 	.byte	0
-	.uleb128 0x94
+	.uleb128 0x95
 	.uleb128 0x34
 	.byte	0
 	.uleb128 0x3
@@ -25116,7 +25478,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x95
+	.uleb128 0x96
 	.uleb128 0x34
 	.byte	0
 	.uleb128 0x31
@@ -25125,7 +25487,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x18
 	.byte	0
 	.byte	0
-	.uleb128 0x96
+	.uleb128 0x97
 	.uleb128 0x2e
 	.byte	0x1
 	.uleb128 0x47
@@ -25144,7 +25506,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x97
+	.uleb128 0x98
 	.uleb128 0x2e
 	.byte	0x1
 	.uleb128 0x3
@@ -25163,7 +25525,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x13
 	.byte	0
 	.byte	0
-	.uleb128 0x98
+	.uleb128 0x99
 	.uleb128 0x2e
 	.byte	0
 	.uleb128 0x3
@@ -25180,7 +25542,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x19
 	.byte	0
 	.byte	0
-	.uleb128 0x99
+	.uleb128 0x9a
 	.uleb128 0x34
 	.byte	0
 	.uleb128 0x3
@@ -25197,7 +25559,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x19
 	.byte	0
 	.byte	0
-	.uleb128 0x9a
+	.uleb128 0x9b
 	.uleb128 0x34
 	.byte	0
 	.uleb128 0x3
@@ -25212,24 +25574,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x19
 	.byte	0
 	.byte	0
-	.uleb128 0x9b
+	.uleb128 0x9c
 	.uleb128 0x34
 	.byte	0
 	.uleb128 0x47
 	.uleb128 0x13
 	.uleb128 0x2
 	.uleb128 0x18
-	.byte	0
-	.byte	0
-	.uleb128 0x9c
-	.uleb128 0x34
-	.byte	0
-	.uleb128 0x47
-	.uleb128 0x13
-	.uleb128 0x6e
-	.uleb128 0xe
-	.uleb128 0x1c
-	.uleb128 0xd
 	.byte	0
 	.byte	0
 	.uleb128 0x9d
@@ -25240,7 +25591,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x6e
 	.uleb128 0xe
 	.uleb128 0x1c
-	.uleb128 0x6
+	.uleb128 0xd
 	.byte	0
 	.byte	0
 	.uleb128 0x9e
@@ -25251,7 +25602,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x6e
 	.uleb128 0xe
 	.uleb128 0x1c
-	.uleb128 0xb
+	.uleb128 0x6
 	.byte	0
 	.byte	0
 	.uleb128 0x9f
@@ -25262,7 +25613,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x6e
 	.uleb128 0xe
 	.uleb128 0x1c
-	.uleb128 0x5
+	.uleb128 0xb
 	.byte	0
 	.byte	0
 	.uleb128 0xa0
@@ -25273,10 +25624,21 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.uleb128 0x6e
 	.uleb128 0xe
 	.uleb128 0x1c
-	.uleb128 0x7
+	.uleb128 0x5
 	.byte	0
 	.byte	0
 	.uleb128 0xa1
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x47
+	.uleb128 0x13
+	.uleb128 0x6e
+	.uleb128 0xe
+	.uleb128 0x1c
+	.uleb128 0x7
+	.byte	0
+	.byte	0
+	.uleb128 0xa2
 	.uleb128 0x34
 	.byte	0
 	.uleb128 0x47
@@ -25316,62 +25678,62 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3463-.LFB3463
 	.quad	.LFB3537
 	.quad	.LFE3537-.LFB3537
-	.quad	.LFB3545
-	.quad	.LFE3545-.LFB3545
-	.quad	.LFB3548
-	.quad	.LFE3548-.LFB3548
-	.quad	.LFB3550
-	.quad	.LFE3550-.LFB3550
+	.quad	.LFB3546
+	.quad	.LFE3546-.LFB3546
+	.quad	.LFB3549
+	.quad	.LFE3549-.LFB3549
 	.quad	.LFB3551
 	.quad	.LFE3551-.LFB3551
-	.quad	.LFB3556
-	.quad	.LFE3556-.LFB3556
-	.quad	.LFB3561
-	.quad	.LFE3561-.LFB3561
+	.quad	.LFB3552
+	.quad	.LFE3552-.LFB3552
+	.quad	.LFB3557
+	.quad	.LFE3557-.LFB3557
 	.quad	.LFB3562
 	.quad	.LFE3562-.LFB3562
-	.quad	.LFB3564
-	.quad	.LFE3564-.LFB3564
-	.quad	.LFB3566
-	.quad	.LFE3566-.LFB3566
+	.quad	.LFB3563
+	.quad	.LFE3563-.LFB3563
+	.quad	.LFB3565
+	.quad	.LFE3565-.LFB3565
 	.quad	.LFB3567
 	.quad	.LFE3567-.LFB3567
 	.quad	.LFB3568
 	.quad	.LFE3568-.LFB3568
-	.quad	.LFB3608
-	.quad	.LFE3608-.LFB3608
-	.quad	.LFB3660
-	.quad	.LFE3660-.LFB3660
+	.quad	.LFB3569
+	.quad	.LFE3569-.LFB3569
+	.quad	.LFB3609
+	.quad	.LFE3609-.LFB3609
 	.quad	.LFB3661
 	.quad	.LFE3661-.LFB3661
 	.quad	.LFB3662
 	.quad	.LFE3662-.LFB3662
 	.quad	.LFB3663
 	.quad	.LFE3663-.LFB3663
-	.quad	.LFB3665
-	.quad	.LFE3665-.LFB3665
-	.quad	.LFB3667
-	.quad	.LFE3667-.LFB3667
+	.quad	.LFB3664
+	.quad	.LFE3664-.LFB3664
+	.quad	.LFB3666
+	.quad	.LFE3666-.LFB3666
 	.quad	.LFB3668
 	.quad	.LFE3668-.LFB3668
 	.quad	.LFB3669
 	.quad	.LFE3669-.LFB3669
-	.quad	.LFB3671
-	.quad	.LFE3671-.LFB3671
-	.quad	.LFB3673
-	.quad	.LFE3673-.LFB3673
+	.quad	.LFB3670
+	.quad	.LFE3670-.LFB3670
+	.quad	.LFB3672
+	.quad	.LFE3672-.LFB3672
 	.quad	.LFB3674
 	.quad	.LFE3674-.LFB3674
 	.quad	.LFB3675
 	.quad	.LFE3675-.LFB3675
 	.quad	.LFB3676
 	.quad	.LFE3676-.LFB3676
-	.quad	.LFB3720
-	.quad	.LFE3720-.LFB3720
+	.quad	.LFB3677
+	.quad	.LFE3677-.LFB3677
 	.quad	.LFB3721
 	.quad	.LFE3721-.LFB3721
-	.quad	.LFB3724
-	.quad	.LFE3724-.LFB3724
+	.quad	.LFB3722
+	.quad	.LFE3722-.LFB3722
+	.quad	.LFB3725
+	.quad	.LFE3725-.LFB3725
 	.quad	0
 	.quad	0
 	.section	.debug_ranges,"",@progbits
@@ -25400,62 +25762,62 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.quad	.LFE3463
 	.quad	.LFB3537
 	.quad	.LFE3537
-	.quad	.LFB3545
-	.quad	.LFE3545
-	.quad	.LFB3548
-	.quad	.LFE3548
-	.quad	.LFB3550
-	.quad	.LFE3550
+	.quad	.LFB3546
+	.quad	.LFE3546
+	.quad	.LFB3549
+	.quad	.LFE3549
 	.quad	.LFB3551
 	.quad	.LFE3551
-	.quad	.LFB3556
-	.quad	.LFE3556
-	.quad	.LFB3561
-	.quad	.LFE3561
+	.quad	.LFB3552
+	.quad	.LFE3552
+	.quad	.LFB3557
+	.quad	.LFE3557
 	.quad	.LFB3562
 	.quad	.LFE3562
-	.quad	.LFB3564
-	.quad	.LFE3564
-	.quad	.LFB3566
-	.quad	.LFE3566
+	.quad	.LFB3563
+	.quad	.LFE3563
+	.quad	.LFB3565
+	.quad	.LFE3565
 	.quad	.LFB3567
 	.quad	.LFE3567
 	.quad	.LFB3568
 	.quad	.LFE3568
-	.quad	.LFB3608
-	.quad	.LFE3608
-	.quad	.LFB3660
-	.quad	.LFE3660
+	.quad	.LFB3569
+	.quad	.LFE3569
+	.quad	.LFB3609
+	.quad	.LFE3609
 	.quad	.LFB3661
 	.quad	.LFE3661
 	.quad	.LFB3662
 	.quad	.LFE3662
 	.quad	.LFB3663
 	.quad	.LFE3663
-	.quad	.LFB3665
-	.quad	.LFE3665
-	.quad	.LFB3667
-	.quad	.LFE3667
+	.quad	.LFB3664
+	.quad	.LFE3664
+	.quad	.LFB3666
+	.quad	.LFE3666
 	.quad	.LFB3668
 	.quad	.LFE3668
 	.quad	.LFB3669
 	.quad	.LFE3669
-	.quad	.LFB3671
-	.quad	.LFE3671
-	.quad	.LFB3673
-	.quad	.LFE3673
+	.quad	.LFB3670
+	.quad	.LFE3670
+	.quad	.LFB3672
+	.quad	.LFE3672
 	.quad	.LFB3674
 	.quad	.LFE3674
 	.quad	.LFB3675
 	.quad	.LFE3675
 	.quad	.LFB3676
 	.quad	.LFE3676
-	.quad	.LFB3720
-	.quad	.LFE3720
+	.quad	.LFB3677
+	.quad	.LFE3677
 	.quad	.LFB3721
 	.quad	.LFE3721
-	.quad	.LFB3724
-	.quad	.LFE3724
+	.quad	.LFB3722
+	.quad	.LFE3722
+	.quad	.LFB3725
+	.quad	.LFE3725
 	.quad	0
 	.quad	0
 	.section	.debug_line,"",@progbits
@@ -25521,7 +25883,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"tmat3x4<float, (glm::precision)0u>"
 .LASF163:
 	.string	"_ZNSt11char_traitsIcE7not_eofERKi"
-.LASF1241:
+.LASF1261:
 	.string	"filename"
 .LASF939:
 	.string	"glm::detail::tvec3"
@@ -25545,19 +25907,19 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"__normal_iterator"
 .LASF262:
 	.string	"_ZNSs6insertEmPKc"
-.LASF1336:
+.LASF1360:
 	.string	"SrcA0"
-.LASF1337:
+.LASF1361:
 	.string	"SrcA1"
-.LASF1338:
+.LASF1362:
 	.string	"SrcA2"
-.LASF1339:
+.LASF1363:
 	.string	"SrcA3"
 .LASF1188:
 	.string	"getFragmentShader"
 .LASF224:
 	.string	"operator[]"
-.LASF1240:
+.LASF1260:
 	.string	"_ZN13TextureLoader4loadESs"
 .LASF296:
 	.string	"c_str"
@@ -25575,7 +25937,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNKSs6cbeginEv"
 .LASF326:
 	.string	"find_last_not_of"
-.LASF1279:
+.LASF1299:
 	.string	"height"
 .LASF427:
 	.string	"initializer_list<glm::detail::tvec3<float, (glm::precision)0u> >"
@@ -25583,17 +25945,17 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"__min"
 .LASF955:
 	.string	"_SC_ARG_MAX"
-.LASF1348:
+.LASF1372:
 	.string	"__initialize_p"
 .LASF841:
 	.string	"_ZN3glm6detail7tmat3x3IfLNS_9precisionE0EEmmEi"
-.LASF1340:
+.LASF1364:
 	.string	"SrcB0"
 .LASF803:
 	.string	"_ZN3glm6detail5tvec3IfLNS_9precisionE0EEaSERKS3_"
-.LASF1342:
+.LASF1366:
 	.string	"SrcB2"
-.LASF1343:
+.LASF1367:
 	.string	"SrcB3"
 .LASF181:
 	.string	"~basic_string"
@@ -25603,13 +25965,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN3glm6detail7tmat3x3IfLNS_9precisionE0EEmmEv"
 .LASF966:
 	.string	"_SC_TIMERS"
-.LASF1371:
+.LASF1395:
 	.string	"__glewBindVertexArray"
 .LASF1165:
 	.string	"_SC_TRACE_SYS_MAX"
 .LASF1054:
 	.string	"_SC_XOPEN_XPG2"
-.LASF1328:
+.LASF1352:
 	.string	"fovy"
 .LASF728:
 	.string	"ungetc"
@@ -25623,17 +25985,19 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_FILE_SYSTEM"
 .LASF373:
 	.string	"_S_app"
-.LASF1335:
+.LASF1240:
+	.string	"Height"
+.LASF1359:
 	.string	"_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ERKf"
 .LASF977:
 	.string	"_SC_SHARED_MEMORY_OBJECTS"
-.LASF1291:
+.LASF1315:
 	.string	"_ZN4Util17VertexArrayObjectC2Ev"
 .LASF626:
 	.string	"lconv"
-.LASF1259:
+.LASF1279:
 	.string	"result"
-.LASF1319:
+.LASF1343:
 	.string	"__lhs"
 .LASF185:
 	.string	"_ZNSsaSEOSs"
@@ -25645,7 +26009,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs13_S_copy_charsEPcS_S_"
 .LASF426:
 	.string	"initializer_list<glm::detail::tvec2<float, (glm::precision)0u> >"
-.LASF1233:
+.LASF1253:
 	.string	"TextureLoader"
 .LASF132:
 	.string	"_ZNSs4_Rep7_M_grabERKSaIcES2_"
@@ -25655,11 +26019,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN9__gnu_cxx17__normal_iteratorIPcSsEpLERKl"
 .LASF303:
 	.string	"_ZNKSs4findERKSsm"
-.LASF1276:
+.LASF1296:
 	.string	"GLFW_Init"
 .LASF347:
 	.string	"_M_len"
-.LASF1391:
+.LASF1415:
 	.string	"GNU C++ 4.8.4 -mtune=generic -march=x86-64 -g -std=c++11 -fexceptions -fstack-protector"
 .LASF883:
 	.string	"_ZNK3glm6detail7tmat3x4IfLNS_9precisionE0EE6lengthEv"
@@ -25675,7 +26039,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_ADVISORY_INFO"
 .LASF63:
 	.string	"_ZNKSt15__exception_ptr13exception_ptr6_M_getEv"
-.LASF1278:
+.LASF1298:
 	.string	"width"
 .LASF718:
 	.string	"getchar"
@@ -25741,7 +26105,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_S_adjustfield"
 .LASF574:
 	.string	"_ZNK9__gnu_cxx17__normal_iteratorIPKcSsE4baseEv"
-.LASF1395:
+.LASF1419:
 	.string	"_ZNSt11char_traitsIcE3eofEv"
 .LASF400:
 	.string	"internal"
@@ -25763,7 +26127,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNKSs16find_last_not_ofEPKcmm"
 .LASF1060:
 	.string	"_SC_INT_MAX"
-.LASF1255:
+.LASF1246:
+	.string	"Palette"
+.LASF1275:
 	.string	"__debug"
 .LASF881:
 	.string	"_ZN3glm6detail7tmat4x2IfLNS_9precisionE0EEmmEi"
@@ -25781,7 +26147,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_S_unitbuf"
 .LASF228:
 	.string	"_ZNSs2atEm"
-.LASF1234:
+.LASF1254:
 	.string	"__texture_handle"
 .LASF953:
 	.string	"c_ispeed"
@@ -25797,11 +26163,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"rend"
 .LASF1083:
 	.string	"_SC_XBS5_LP64_OFF64"
+.LASF1235:
+	.string	"ILubyte"
 .LASF970:
 	.string	"_SC_FSYNC"
-.LASF1314:
+.LASF1338:
 	.string	"View"
-.LASF1372:
+.LASF1396:
 	.string	"__glewGenVertexArrays"
 .LASF397:
 	.string	"fmtflags"
@@ -25825,7 +26193,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs5eraseEN9__gnu_cxx17__normal_iteratorIPcSsEE"
 .LASF1044:
 	.string	"_SC_PASS_MAX"
-.LASF1288:
+.LASF1312:
 	.string	"prefix"
 .LASF392:
 	.string	"_S_synced_with_stdio"
@@ -25833,7 +26201,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_COLL_WEIGHTS_MAX"
 .LASF752:
 	.string	"PFNGLCREATESHADERPROC"
-.LASF1369:
+.LASF1393:
 	.string	"__glewUseProgram"
 .LASF174:
 	.string	"_S_compare"
@@ -25861,15 +26229,17 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"atol"
 .LASF903:
 	.string	"call"
-.LASF1290:
+.LASF1314:
 	.string	"_ZN4Util6CameraC2Ev"
 .LASF564:
 	.string	"_ZNK9__gnu_cxx17__normal_iteratorIPKcSsEptEv"
 .LASF795:
 	.string	"_ZN3glm6detail5tvec4IfLNS_9precisionE0EEmmEv"
+.LASF1346:
+	.string	"_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev"
 .LASF320:
 	.string	"_ZNKSs12find_last_ofEcm"
-.LASF1273:
+.LASF1293:
 	.string	"uniform_name"
 .LASF1049:
 	.string	"_SC_XOPEN_ENH_I18N"
@@ -25883,7 +26253,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs6insertEN9__gnu_cxx17__normal_iteratorIPcSsEEc"
 .LASF39:
 	.string	"size_t"
-.LASF1254:
+.LASF1274:
 	.string	"__type"
 .LASF892:
 	.string	"tmat4x3<float, (glm::precision)0u>"
@@ -25905,6 +26275,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"pop_back"
 .LASF465:
 	.string	"swscanf"
+.LASF1239:
+	.string	"Width"
 .LASF198:
 	.string	"cbegin"
 .LASF610:
@@ -25919,7 +26291,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs4rendEv"
 .LASF27:
 	.string	"_mode"
-.LASF1269:
+.LASF1289:
 	.string	"this"
 .LASF1207:
 	.string	"_ZN4Util6Camera12setLookingAtEN3glm6detail5tvec3IfLNS1_9precisionE0EEE"
@@ -25927,7 +26299,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNKSs6rbeginEv"
 .LASF1103:
 	.string	"_SC_FILE_LOCKING"
-.LASF1312:
+.LASF1336:
 	.string	"vbo_uv"
 .LASF66:
 	.string	"_ZNKSt15__exception_ptr13exception_ptrcvbEv"
@@ -25959,7 +26331,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"__wchb"
 .LASF84:
 	.string	"_ZNSt11char_traitsIcE4copyEPcPKcm"
-.LASF1402:
+.LASF1426:
 	.string	"__static_initialization_and_destruction_0"
 .LASF1058:
 	.string	"_SC_CHAR_MAX"
@@ -25977,11 +26349,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"towctrans"
 .LASF924:
 	.string	"genType"
-.LASF1239:
+.LASF1259:
 	.string	"load"
 .LASF207:
 	.string	"_ZNKSs4sizeEv"
-.LASF1388:
+.LASF1412:
 	.string	"_ZN15ShaderGenerator11__directoryE"
 .LASF570:
 	.string	"_ZN9__gnu_cxx17__normal_iteratorIPKcSsEpLERKl"
@@ -25991,6 +26363,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs6appendERKSs"
 .LASF923:
 	.string	"_ZN3glm4sqrtIfEET_RKS1_"
+.LASF1248:
+	.string	"PalSize"
 .LASF842:
 	.string	"tmat2x3<float, (glm::precision)0u>"
 .LASF304:
@@ -26015,17 +26389,19 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"uint_fast16_t"
 .LASF482:
 	.string	"tm_hour"
-.LASF1368:
+.LASF1392:
 	.string	"__glewUniformMatrix4fv"
+.LASF1242:
+	.string	"SizeOfData"
 .LASF113:
 	.string	"_M_refcount"
-.LASF1303:
+.LASF1327:
 	.string	"img_loc"
 .LASF582:
 	.string	"__numeric_traits_integer<char>"
 .LASF82:
 	.string	"_ZNSt11char_traitsIcE4moveEPcPKcm"
-.LASF1304:
+.LASF1328:
 	.string	"shader_color"
 .LASF154:
 	.string	"_M_check"
@@ -26053,9 +26429,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_MEMLOCK_RANGE"
 .LASF1057:
 	.string	"_SC_CHAR_BIT"
-.LASF1341:
+.LASF1365:
 	.string	"SrcB1"
-.LASF1250:
+.LASF1270:
 	.string	"newattr"
 .LASF531:
 	.string	"__numeric_traits_integer<int>"
@@ -26109,10 +26485,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_2_C_BIND"
 .LASF1113:
 	.string	"_SC_SHELL"
-.LASF1317:
+.LASF1341:
 	.string	"SamplerID"
-.LASF1322:
-	.string	"_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2Ev"
 .LASF908:
 	.string	"operator-<float, (glm::precision)0u>"
 .LASF1149:
@@ -26127,6 +26501,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_flags"
 .LASF991:
 	.string	"_SC_BC_BASE_MAX"
+.LASF1245:
+	.string	"Origin"
 .LASF638:
 	.string	"frac_digits"
 .LASF999:
@@ -26139,21 +26515,21 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"ungetwc"
 .LASF1045:
 	.string	"_SC_XOPEN_VERSION"
-.LASF1306:
+.LASF1330:
 	.string	"IMG_plant"
-.LASF1238:
+.LASF1258:
 	.string	"_ZN13TextureLoader6InitILEv"
 .LASF498:
 	.string	"double"
 .LASF817:
 	.string	"_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEaSERKS3_"
-.LASF1307:
+.LASF1331:
 	.string	"g_vertex_buffer_data"
 .LASF799:
 	.string	"_ZNK3glm6detail5tvec3IfLNS_9precisionE0EE6lengthEv"
 .LASF734:
 	.string	"wctype"
-.LASF1363:
+.LASF1387:
 	.string	"__glewGetShaderiv"
 .LASF1020:
 	.string	"_SC_PII_OSI_CLTS"
@@ -26165,7 +26541,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_IO_backup_base"
 .LASF914:
 	.string	"length_t"
-.LASF1296:
+.LASF1320:
 	.string	"element_size"
 .LASF886:
 	.string	"_ZNK3glm6detail7tmat3x4IfLNS_9precisionE0EEixEi"
@@ -26211,7 +26587,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_M_set_sharable"
 .LASF719:
 	.string	"gets"
-.LASF1373:
+.LASF1397:
 	.string	"glewExperimental"
 .LASF648:
 	.string	"int_n_sep_by_space"
@@ -26247,11 +26623,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"ldiv_t"
 .LASF746:
 	.string	"PFNGLBINDBUFFERPROC"
-.LASF1313:
+.LASF1337:
 	.string	"Projection"
+.LASF1236:
+	.string	"ILuint"
 .LASF9:
 	.string	"_IO_save_base"
-.LASF1396:
+.LASF1420:
 	.string	"npos"
 .LASF410:
 	.string	"adjustfield"
@@ -26265,7 +26643,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"assign"
 .LASF764:
 	.string	"PFNGLVERTEXATTRIBPOINTERPROC"
-.LASF1326:
+.LASF1350:
 	.string	"_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2ERKfS5_S5_"
 .LASF79:
 	.string	"_ZNSt11char_traitsIcE6lengthEPKc"
@@ -26303,7 +26681,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"fixed"
 .LASF1021:
 	.string	"_SC_PII_OSI_M"
-.LASF1392:
+.LASF1416:
 	.string	"/home/joe/Github_Repos/opengl-projects/TextureMapping/main.cpp"
 .LASF111:
 	.string	"_M_length"
@@ -26321,11 +26699,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"to_char_type"
 .LASF439:
 	.string	"stringstream"
-.LASF1367:
+.LASF1391:
 	.string	"__glewUniform1i"
 .LASF1100:
 	.string	"_SC_FIFO"
-.LASF1292:
+.LASF1316:
 	.string	"__index"
 .LASF7:
 	.string	"_IO_buf_base"
@@ -26381,7 +26759,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"6ldiv_t"
 .LASF186:
 	.string	"_ZNSsaSESt16initializer_listIcE"
-.LASF1242:
+.LASF1262:
 	.string	"__ioinit"
 .LASF512:
 	.string	"wscanf"
@@ -26391,6 +26769,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"precision"
 .LASF307:
 	.string	"_ZNKSs5rfindERKSsm"
+.LASF1237:
+	.string	"ILinfo"
 .LASF446:
 	.string	"_ZSt4cout"
 .LASF471:
@@ -26411,9 +26791,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"cend"
 .LASF1116:
 	.string	"_SC_SPORADIC_SERVER"
-.LASF1235:
+.LASF1255:
 	.string	"__inited"
-.LASF1366:
+.LASF1390:
 	.string	"__glewShaderSource"
 .LASF1170:
 	.string	"ShaderType"
@@ -26427,11 +26807,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"qsort"
 .LASF927:
 	.string	"radians<float>"
-.LASF1387:
+.LASF1411:
 	.string	"_ZN9__gnu_cxx24__numeric_traits_integerIlE5__maxE"
 .LASF1229:
 	.string	"setAttribPtrData"
-.LASF1284:
+.LASF1304:
 	.string	"window"
 .LASF293:
 	.string	"_ZNSs12_S_constructEmcRKSaIcE"
@@ -26445,15 +26825,19 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"allocate"
 .LASF792:
 	.string	"tvec4"
+.LASF1251:
+	.string	"NumMips"
 .LASF474:
 	.string	"wcscat"
 .LASF741:
 	.string	"_IO_lock_t"
-.LASF1344:
+.LASF1252:
+	.string	"NumLayers"
+.LASF1368:
 	.string	"_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKfS5_S5_S5_"
 .LASF528:
 	.string	"deallocate"
-.LASF1357:
+.LASF1381:
 	.string	"__glewCreateProgram"
 .LASF157:
 	.string	"_ZNKSs15_M_check_lengthEmmPKc"
@@ -26481,7 +26865,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs6assignEmc"
 .LASF641:
 	.string	"n_cs_precedes"
-.LASF1246:
+.LASF1266:
 	.string	"getch"
 .LASF290:
 	.string	"_S_construct_aux_2"
@@ -26497,7 +26881,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSt15__exception_ptr13exception_ptraSERKS0_"
 .LASF763:
 	.string	"PFNGLUSEPROGRAMPROC"
-.LASF1261:
+.LASF1281:
 	.string	"error_log"
 .LASF917:
 	.string	"mat4"
@@ -26515,7 +26899,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"tm_sec"
 .LASF1179:
 	.string	"createProgram"
-.LASF1266:
+.LASF1286:
 	.string	"fragmentShader"
 .LASF1166:
 	.string	"_SC_TRACE_USER_EVENT_MAX"
@@ -26535,7 +26919,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN4Util6Shader4bindEv"
 .LASF787:
 	.string	"_ZN3glm6detail5tvec2IfLNS_9precisionE0EEmmEi"
-.LASF1267:
+.LASF1287:
 	.string	"loc_vertex_shader"
 .LASF809:
 	.string	"tmat4x4<float, (glm::precision)0u>"
@@ -26545,7 +26929,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNK9__gnu_cxx17__normal_iteratorIPKcSsEmiERKl"
 .LASF231:
 	.string	"_ZNKSs5frontEv"
-.LASF1258:
+.LASF1278:
 	.string	"sourcePtr"
 .LASF210:
 	.string	"_ZNKSs8max_sizeEv"
@@ -26553,13 +26937,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs5eraseEmm"
 .LASF765:
 	.string	"PFNGLBINDVERTEXARRAYPROC"
-.LASF1295:
+.LASF1319:
 	.string	"index"
 .LASF390:
 	.string	"_S_ios_seekdir_end"
 .LASF351:
 	.string	"string"
-.LASF1381:
+.LASF1405:
 	.string	"_ZN9__gnu_cxx25__numeric_traits_floatingIeE16__max_exponent10E"
 .LASF933:
 	.string	"_ZN3glm9normalizeIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_"
@@ -26571,11 +26955,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN3glm6detail7tmat2x3IfLNS_9precisionE0EEppEi"
 .LASF810:
 	.string	"value"
-.LASF1382:
+.LASF1406:
 	.string	"_ZN9__gnu_cxx24__numeric_traits_integerImE8__digitsE"
 .LASF620:
 	.string	"intptr_t"
-.LASF1399:
+.LASF1423:
 	.string	"decltype(nullptr)"
 .LASF1198:
 	.string	"_ZN4Util7Texture4bindEv"
@@ -26593,7 +26977,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN3glm6detail7tmat3x4IfLNS_9precisionE0EEmmEi"
 .LASF350:
 	.string	"_ZNKSt16initializer_listIcE5beginEv"
-.LASF1397:
+.LASF1421:
 	.string	"_ZNSs12_S_empty_repEv"
 .LASF889:
 	.string	"_ZN3glm6detail7tmat3x4IfLNS_9precisionE0EEmmEv"
@@ -26633,7 +27017,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_IPV6"
 .LASF53:
 	.string	"_M_addref"
-.LASF1378:
+.LASF1402:
 	.string	"_ZN9__gnu_cxx24__numeric_traits_integerIiE5__maxE"
 .LASF313:
 	.string	"_ZNKSs13find_first_ofEPKcmm"
@@ -26641,13 +27025,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"uint_fast8_t"
 .LASF20:
 	.string	"_lock"
-.LASF1377:
+.LASF1401:
 	.string	"_ZN9__gnu_cxx24__numeric_traits_integerIiE5__minE"
 .LASF1038:
 	.string	"_SC_THREAD_PROCESS_SHARED"
 .LASF1009:
 	.string	"_SC_PII_XTI"
-.LASF1321:
+.LASF1345:
 	.string	"__str"
 .LASF315:
 	.string	"_ZNKSs13find_first_ofEcm"
@@ -26657,7 +27041,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"strtod"
 .LASF692:
 	.string	"strtof"
-.LASF1355:
+.LASF1379:
 	.string	"__glewAttachShader"
 .LASF738:
 	.string	"GLsizei"
@@ -26689,7 +27073,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs6appendEmc"
 .LASF435:
 	.string	"sqrt"
-.LASF1251:
+.LASF1271:
 	.string	"getche"
 .LASF1012:
 	.string	"_SC_PII_OSI"
@@ -26711,7 +27095,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"wcstoll"
 .LASF325:
 	.string	"_ZNKSs17find_first_not_ofEcm"
-.LASF1364:
+.LASF1388:
 	.string	"__glewGetUniformLocation"
 .LASF495:
 	.string	"wcsrtombs"
@@ -26721,7 +27105,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"lldiv"
 .LASF1193:
 	.string	"_ZN4Util6Shader18getUniformLocationESs"
-.LASF1374:
+.LASF1398:
 	.string	"window_width"
 .LASF52:
 	.string	"exception_ptr"
@@ -26755,7 +27139,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"showpos"
 .LASF1187:
 	.string	"fragment_shader"
-.LASF1283:
+.LASF1303:
 	.string	"forward_compat"
 .LASF258:
 	.string	"_ZNSs6insertEN9__gnu_cxx17__normal_iteratorIPcSsEESt16initializer_listIcE"
@@ -26765,7 +27149,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN3glm6detail7tmat3x2IfLNS_9precisionE0EEppEi"
 .LASF858:
 	.string	"_ZN3glm6detail7tmat3x2IfLNS_9precisionE0EEppEv"
-.LASF1262:
+.LASF1282:
 	.string	"program_id"
 .LASF42:
 	.string	"__wch"
@@ -26833,7 +27217,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"floatfield"
 .LASF759:
 	.string	"PFNGLLINKPROGRAMPROC"
-.LASF1393:
+.LASF1417:
 	.string	"/home/joe/Github_Repos/opengl-projects/TextureMapping"
 .LASF500:
 	.string	"float"
@@ -26855,7 +27239,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_TIMER_MAX"
 .LASF514:
 	.string	"wcspbrk"
-.LASF1287:
+.LASF1311:
 	.string	"_ZN4Util7TextureC2ESs"
 .LASF257:
 	.string	"_ZNSs6insertEN9__gnu_cxx17__normal_iteratorIPcSsEEmc"
@@ -26867,7 +27251,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_TRACE_EVENT_FILTER"
 .LASF646:
 	.string	"int_p_sep_by_space"
-.LASF1384:
+.LASF1408:
 	.string	"_ZN9__gnu_cxx24__numeric_traits_integerIsE5__minE"
 .LASF342:
 	.string	"type_info"
@@ -26911,9 +27295,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"wcsftime"
 .LASF322:
 	.string	"_ZNKSs17find_first_not_ofERKSsm"
-.LASF1365:
+.LASF1389:
 	.string	"__glewLinkProgram"
-.LASF1260:
+.LASF1280:
 	.string	"log_length"
 .LASF856:
 	.string	"_ZNK3glm6detail7tmat3x2IfLNS_9precisionE0EEixEi"
@@ -26927,17 +27311,17 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_M_refcopy"
 .LASF651:
 	.string	"setlocale"
-.LASF1271:
+.LASF1291:
 	.string	"_ZN4Util6ShaderC2ESsSs"
-.LASF1350:
+.LASF1374:
 	.string	"piecewise_construct"
-.LASF1243:
+.LASF1263:
 	.string	"shader"
 .LASF317:
 	.string	"_ZNKSs12find_last_ofERKSsm"
 .LASF126:
 	.string	"_ZNSs4_Rep15_M_set_sharableEv"
-.LASF1330:
+.LASF1354:
 	.string	"zNear"
 .LASF968:
 	.string	"_SC_PRIORITIZED_IO"
@@ -26949,9 +27333,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"wcstoul"
 .LASF852:
 	.string	"tmat3x2<float, (glm::precision)0u>"
-.LASF1289:
+.LASF1313:
 	.string	"_ZN4Util7TextureC2ESsSs"
-.LASF1265:
+.LASF1285:
 	.string	"vertexShader"
 .LASF1078:
 	.string	"_SC_NL_NMAX"
@@ -26989,6 +27373,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"append"
 .LASF183:
 	.string	"_ZNSsaSEPKc"
+.LASF1244:
+	.string	"Type"
 .LASF737:
 	.string	"GLint"
 .LASF375:
@@ -27017,7 +27403,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNKSs7compareEmmPKcm"
 .LASF297:
 	.string	"_ZNKSs5c_strEv"
-.LASF1356:
+.LASF1380:
 	.string	"__glewCompileShader"
 .LASF650:
 	.string	"int_n_sign_posn"
@@ -27033,6 +27419,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"tvec3"
 .LASF806:
 	.string	"_ZN3glm6detail5tvec3IfLNS_9precisionE0EEppEi"
+.LASF1309:
+	.string	"imageInfo"
 .LASF537:
 	.string	"_ZN9__gnu_cxx3divExx"
 .LASF699:
@@ -27077,7 +27465,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs6insertEmRKSsmm"
 .LASF493:
 	.string	"wcsncmp"
-.LASF1274:
+.LASF1294:
 	.string	"getRandomNumber"
 .LASF534:
 	.string	"__is_signed"
@@ -27115,6 +27503,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_S_internal"
 .LASF538:
 	.string	"__normal_iterator<char*, std::basic_string<char, std::char_traits<char>, std::allocator<char> > >"
+.LASF1233:
+	.string	"ILenum"
 .LASF331:
 	.string	"substr"
 .LASF1214:
@@ -27123,12 +27513,14 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"GLFWwindow"
 .LASF239:
 	.string	"_ZNSspLESt16initializer_listIcE"
-.LASF1359:
+.LASF1383:
 	.string	"__glewDisableVertexAttribArray"
 .LASF636:
 	.string	"negative_sign"
 .LASF188:
 	.string	"_ZNSs5beginEv"
+.LASF1234:
+	.string	"ILboolean"
 .LASF211:
 	.string	"resize"
 .LASF16:
@@ -27143,6 +27535,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"mbsrtowcs"
 .LASF62:
 	.string	"swap"
+.LASF1247:
+	.string	"PalType"
 .LASF168:
 	.string	"_ZNSs9_M_assignEPcmc"
 .LASF697:
@@ -27151,7 +27545,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"wcsncpy"
 .LASF129:
 	.string	"_M_refdata"
-.LASF1256:
+.LASF1276:
 	.string	"shader_id"
 .LASF1086:
 	.string	"_SC_XOPEN_REALTIME"
@@ -27161,13 +27555,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_MB_LEN_MAX"
 .LASF909:
 	.string	"_ZN3glm6detailmiIfLNS_9precisionE0EEENS0_5tvec3IT_XT0_EEERKS5_S7_"
-.LASF1401:
+.LASF1425:
 	.string	"_ZN13TextureLoader12getTextureIDEv"
 .LASF74:
 	.string	"_ZNSt11char_traitsIcE2ltERKcS2_"
 .LASF165:
 	.string	"_M_move"
-.LASF1394:
+.LASF1418:
 	.string	"piecewise_construct_t"
 .LASF1091:
 	.string	"_SC_C_LANG_SUPPORT"
@@ -27181,17 +27575,17 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_M_assign"
 .LASF104:
 	.string	"_M_dataplus"
-.LASF1352:
+.LASF1376:
 	.string	"__glewBindBuffer"
 .LASF1157:
 	.string	"_SC_RAW_SOCKETS"
-.LASF1257:
+.LASF1277:
 	.string	"contents"
 .LASF624:
 	.string	"char16_t"
 .LASF344:
 	.string	"reverse_iterator<__gnu_cxx::__normal_iterator<char*, std::basic_string<char, std::char_traits<char>, std::allocator<char> > > >"
-.LASF1309:
+.LASF1333:
 	.string	"g_uv_buffer_data"
 .LASF11:
 	.string	"_IO_save_end"
@@ -27203,17 +27597,17 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"back"
 .LASF985:
 	.string	"_SC_PAGESIZE"
-.LASF1325:
+.LASF1349:
 	.string	"Result"
 .LASF234:
 	.string	"_ZNKSs4backEv"
-.LASF1345:
+.LASF1369:
 	.string	"_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2Ev"
 .LASF558:
 	.string	"_ZNK9__gnu_cxx17__normal_iteratorIPcSsEmiERKl"
 .LASF789:
 	.string	"_ZNK3glm6detail5tvec4IfLNS_9precisionE0EE6lengthEv"
-.LASF1236:
+.LASF1256:
 	.string	"InitIL"
 .LASF263:
 	.string	"_ZNSs6insertEmmc"
@@ -27225,7 +27619,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_XOPEN_XPG3"
 .LASF1056:
 	.string	"_SC_XOPEN_XPG4"
-.LASF1305:
+.LASF1329:
 	.string	"shader_texture"
 .LASF998:
 	.string	"_SC_LINE_MAX"
@@ -27275,9 +27669,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"p_sep_by_space"
 .LASF567:
 	.string	"_ZN9__gnu_cxx17__normal_iteratorIPKcSsEmmEv"
-.LASF1370:
+.LASF1394:
 	.string	"__glewVertexAttribPointer"
-.LASF1310:
+.LASF1334:
 	.string	"vbo_pos"
 .LASF341:
 	.string	"_Alloc"
@@ -27305,15 +27699,15 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"p_cs_precedes"
 .LASF818:
 	.string	"_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEppEv"
-.LASF1302:
+.LASF1326:
 	.string	"res_loc"
-.LASF1375:
+.LASF1399:
 	.string	"window_height"
 .LASF548:
 	.string	"operator--"
-.LASF1386:
+.LASF1410:
 	.string	"_ZN9__gnu_cxx24__numeric_traits_integerIlE5__minE"
-.LASF1358:
+.LASF1382:
 	.string	"__glewCreateShader"
 .LASF1130:
 	.string	"_SC_STREAMS"
@@ -27329,7 +27723,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"int_fast16_t"
 .LASF330:
 	.string	"_ZNKSs16find_last_not_ofEcm"
-.LASF1298:
+.LASF1322:
 	.string	"normalized"
 .LASF336:
 	.string	"_ZNKSs7compareEPKc"
@@ -27339,7 +27733,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_XOPEN_REALTIME_THREADS"
 .LASF862:
 	.string	"tmat2x4<float, (glm::precision)0u>"
-.LASF1323:
+.LASF1347:
 	.string	"_ZN3glm6detail5tvec3IfLNS_9precisionE0EEC2IiiiEERKT_RKT0_RKT1_"
 .LASF594:
 	.string	"short int"
@@ -27359,9 +27753,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN3glm6detail7tmat3x2IfLNS_9precisionE0EEmmEi"
 .LASF130:
 	.string	"_ZNSs4_Rep10_M_refdataEv"
+.LASF1243:
+	.string	"Format"
 .LASF149:
 	.string	"_ZNKSs9_M_ibeginEv"
-.LASF1398:
+.LASF1422:
 	.string	"_ZSt3tanf"
 .LASF859:
 	.string	"_ZN3glm6detail7tmat3x2IfLNS_9precisionE0EEmmEv"
@@ -27371,7 +27767,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_M_set_leaked"
 .LASF551:
 	.string	"_ZNK9__gnu_cxx17__normal_iteratorIPcSsEixERKl"
-.LASF1380:
+.LASF1404:
 	.string	"_ZN9__gnu_cxx25__numeric_traits_floatingIdE16__max_exponent10E"
 .LASF653:
 	.string	"localeconv"
@@ -27393,7 +27789,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_TRACE_EVENT_NAME_MAX"
 .LASF550:
 	.string	"_ZN9__gnu_cxx17__normal_iteratorIPcSsEmmEi"
-.LASF1349:
+.LASF1373:
 	.string	"__priority"
 .LASF208:
 	.string	"_ZNKSs6lengthEv"
@@ -27401,11 +27797,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_MONOTONIC_CLOCK"
 .LASF549:
 	.string	"_ZN9__gnu_cxx17__normal_iteratorIPcSsEmmEv"
-.LASF1383:
+.LASF1407:
 	.string	"_ZN9__gnu_cxx24__numeric_traits_integerIcE5__maxE"
 .LASF647:
 	.string	"int_n_cs_precedes"
-.LASF1400:
+.LASF1424:
 	.string	"getTextureID"
 .LASF530:
 	.string	"_ZNK9__gnu_cxx13new_allocatorIcE8max_sizeEv"
@@ -27427,7 +27823,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"uint_fast64_t"
 .LASF606:
 	.string	"int_least32_t"
-.LASF1280:
+.LASF1300:
 	.string	"window_title"
 .LASF833:
 	.string	"_ZNK3glm6detail7tmat3x3IfLNS_9precisionE0EE6lengthEv"
@@ -27455,15 +27851,15 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_M_is_shared"
 .LASF518:
 	.string	"__gnu_cxx"
-.LASF1253:
+.LASF1273:
 	.string	"directory"
 .LASF665:
 	.string	"lldiv_t"
 .LASF935:
 	.string	"_ZN3glm5crossIfLNS_9precisionE0EEENS_6detail5tvec3IT_XT0_EEERKS5_S7_"
-.LASF1252:
+.LASF1272:
 	.string	"_Z6getchev"
-.LASF1268:
+.LASF1288:
 	.string	"loc_fragment_shader"
 .LASF774:
 	.string	"defaultp"
@@ -27493,19 +27889,19 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_MQ_PRIO_MAX"
 .LASF1110:
 	.string	"_SC_SPIN_LOCKS"
-.LASF1332:
+.LASF1356:
 	.string	"__PRETTY_FUNCTION__"
 .LASF1180:
 	.string	"_ZN15ShaderGenerator13createProgramESsSs"
 .LASF1016:
 	.string	"_SC_IOV_MAX"
-.LASF1351:
+.LASF1375:
 	.string	"__glewActiveTexture"
 .LASF975:
 	.string	"_SC_MESSAGE_PASSING"
 .LASF37:
 	.string	"sizetype"
-.LASF1347:
+.LASF1371:
 	.string	"_ZN3glm6detail7tmat4x4IfLNS_9precisionE0EEC2ENS3_4ctorE"
 .LASF91:
 	.string	"eq_int_type"
@@ -27523,7 +27919,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"seekdir"
 .LASF1201:
 	.string	"Camera"
-.LASF1294:
+.LASF1318:
 	.string	"__size"
 .LASF1132:
 	.string	"_SC_V6_ILP32_OFF32"
@@ -27557,7 +27953,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"getVertexShader"
 .LASF308:
 	.string	"_ZNKSs5rfindEPKcmm"
-.LASF1379:
+.LASF1403:
 	.string	"_ZN9__gnu_cxx25__numeric_traits_floatingIfE16__max_exponent10E"
 .LASF401:
 	.string	"left"
@@ -27575,11 +27971,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"GLsizeiptr"
 .LASF225:
 	.string	"_ZNKSsixEm"
-.LASF1237:
+.LASF1257:
 	.string	"_ZNSs4_Rep12_S_empty_repEv"
 .LASF1221:
 	.string	"__element_size"
-.LASF1360:
+.LASF1384:
 	.string	"__glewEnableVertexAttribArray"
 .LASF379:
 	.string	"_S_ios_openmode_end"
@@ -27631,7 +28027,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"new_allocator"
 .LASF517:
 	.string	"wmemchr"
-.LASF1331:
+.LASF1355:
 	.string	"zFar"
 .LASF1147:
 	.string	"_SC_LEVEL2_CACHE_SIZE"
@@ -27647,13 +28043,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"tm_year"
 .LASF744:
 	.string	"PFNGLACTIVETEXTUREPROC"
-.LASF1320:
+.LASF1344:
 	.string	"__rhs"
 .LASF832:
 	.string	"tmat3x3<float, (glm::precision)0u>"
 .LASF664:
 	.string	"7lldiv_t"
-.LASF1403:
+.LASF1427:
 	.string	"_GLOBAL__sub_I__Z16LoadFileToStringSs"
 .LASF337:
 	.string	"_ZNKSs7compareEmmPKc"
@@ -27665,13 +28061,17 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"GLboolean"
 .LASF1031:
 	.string	"_SC_THREAD_STACK_MIN"
+.LASF1241:
+	.string	"Depth"
+.LASF1308:
+	.string	"success"
 .LASF877:
 	.string	"_ZN3glm6detail7tmat4x2IfLNS_9precisionE0EEaSERKS3_"
 .LASF944:
 	.string	"speed_t"
-.LASF1249:
+.LASF1269:
 	.string	"oldattr"
-.LASF1297:
+.LASF1321:
 	.string	"def_type"
 .LASF560:
 	.string	"_ZNK9__gnu_cxx17__normal_iteratorIPcSsE4baseEv"
@@ -27705,11 +28105,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"wcstol"
 .LASF572:
 	.string	"_ZN9__gnu_cxx17__normal_iteratorIPKcSsEmIERKl"
-.LASF1247:
+.LASF1267:
 	.string	"_Z16LoadFileToStringSs"
 .LASF169:
 	.string	"_S_copy_chars"
-.LASF1275:
+.LASF1295:
 	.string	"_Z15getRandomNumberv"
 .LASF571:
 	.string	"_ZNK9__gnu_cxx17__normal_iteratorIPKcSsEplERKl"
@@ -27733,7 +28133,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNKSs8capacityEv"
 .LASF284:
 	.string	"_ZNSs7replaceEN9__gnu_cxx17__normal_iteratorIPcSsEES2_NS0_IPKcSsEES5_"
-.LASF1315:
+.LASF1339:
 	.string	"Model"
 .LASF448:
 	.string	"btowc"
@@ -27789,11 +28189,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN3glm6detail7tmat3x2IfLNS_9precisionE0EEixEi"
 .LASF1206:
 	.string	"setLookingAt"
-.LASF1272:
+.LASF1292:
 	.string	"_ZN4Util6ShaderC2ESsSsSs"
 .LASF156:
 	.string	"_M_check_length"
-.LASF1277:
+.LASF1297:
 	.string	"_Z9GLFW_InitiiSsiih"
 .LASF766:
 	.string	"PFNGLGENVERTEXARRAYSPROC"
@@ -27807,7 +28207,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs6assignERKSsmm"
 .LASF601:
 	.string	"uint16_t"
-.LASF1389:
+.LASF1413:
 	.string	"_ZN13TextureLoader16__texture_handleE"
 .LASF1040:
 	.string	"_SC_NPROCESSORS_ONLN"
@@ -27835,9 +28235,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"rfind"
 .LASF276:
 	.string	"_ZNSs7replaceEmmmc"
-.LASF1324:
+.LASF1348:
 	.string	"center"
-.LASF1293:
+.LASF1317:
 	.string	"_ZN4Util18VertexBufferObjectC2Ev"
 .LASF437:
 	.string	"ifstream"
@@ -27849,6 +28249,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNKSs16find_last_not_ofEPKcm"
 .LASF83:
 	.string	"copy"
+.LASF1249:
+	.string	"CubeFlags"
 .LASF840:
 	.string	"_ZN3glm6detail7tmat3x3IfLNS_9precisionE0EEppEi"
 .LASF215:
@@ -27885,7 +28287,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_M_leak_hard"
 .LASF57:
 	.string	"operator="
-.LASF1245:
+.LASF1265:
 	.string	"LoadFileToString"
 .LASF716:
 	.string	"ftell"
@@ -27897,7 +28299,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"rand"
 .LASF145:
 	.string	"_ZNSs7_M_dataEPc"
-.LASF1361:
+.LASF1385:
 	.string	"__glewGetProgramiv"
 .LASF936:
 	.string	"dot<float, (glm::precision)0u, glm::detail::tvec3>"
@@ -27921,7 +28323,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"new_allocator<char>"
 .LASF213:
 	.string	"_ZNSs6resizeEm"
-.LASF1346:
+.LASF1370:
 	.string	"angle"
 .LASF829:
 	.string	"_ZN3glm6detail7tmat2x2IfLNS_9precisionE0EEmmEv"
@@ -27935,7 +28337,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"base"
 .LASF579:
 	.string	"__numeric_traits_floating<double>"
-.LASF1327:
+.LASF1351:
 	.string	"degrees"
 .LASF29:
 	.string	"FILE"
@@ -27945,15 +28347,17 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_EQUIV_CLASS_MAX"
 .LASF134:
 	.string	"_ZNSs4_Rep9_S_createEmmRKSaIcE"
+.LASF1307:
+	.string	"imageID"
 .LASF946:
 	.string	"termios"
 .LASF958:
 	.string	"_SC_NGROUPS_MAX"
-.LASF1390:
+.LASF1414:
 	.string	"_ZN13TextureLoader8__initedE"
 .LASF243:
 	.string	"_ZNSs6appendEPKcm"
-.LASF1264:
+.LASF1284:
 	.string	"fragment_shader_file"
 .LASF46:
 	.string	"char"
@@ -27961,11 +28365,11 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"cout"
 .LASF1131:
 	.string	"_SC_2_PBS_CHECKPOINT"
-.LASF1362:
+.LASF1386:
 	.string	"__glewGetShaderInfoLog"
 .LASF779:
 	.string	"_ZNK3glm6detail5tvec2IfLNS_9precisionE0EE6lengthEv"
-.LASF1376:
+.LASF1400:
 	.string	"__dso_handle"
 .LASF836:
 	.string	"_ZNK3glm6detail7tmat3x3IfLNS_9precisionE0EEixEi"
@@ -27983,7 +28387,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_SC_TRACE_INHERIT"
 .LASF489:
 	.string	"tm_gmtoff"
-.LASF1316:
+.LASF1340:
 	.string	"MatrixID"
 .LASF915:
 	.string	"vec3"
@@ -28009,7 +28413,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN3glm6detail7tmat2x4IfLNS_9precisionE0EEaSERKS3_"
 .LASF614:
 	.string	"int_fast32_t"
-.LASF1244:
+.LASF1264:
 	.string	"buffer"
 .LASF1209:
 	.string	"_ZN4Util6Camera5setUpEN3glm6detail5tvec3IfLNS1_9precisionE0EEE"
@@ -28017,9 +28421,9 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNSs6resizeEmc"
 .LASF880:
 	.string	"_ZN3glm6detail7tmat4x2IfLNS_9precisionE0EEppEi"
-.LASF1263:
+.LASF1283:
 	.string	"vertex_shader_file"
-.LASF1334:
+.LASF1358:
 	.string	"Zero"
 .LASF1213:
 	.string	"__vao"
@@ -28029,15 +28433,15 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"uint_least16_t"
 .LASF1218:
 	.string	"_ZN4Util17VertexArrayObject16disableAttributeEi"
-.LASF1329:
+.LASF1353:
 	.string	"aspect"
-.LASF1286:
+.LASF1306:
 	.string	"_Z9randColorv"
 .LASF229:
 	.string	"front"
 .LASF1228:
 	.string	"_ZN4Util18VertexBufferObject4bindEv"
-.LASF1354:
+.LASF1378:
 	.string	"__glewGenBuffers"
 .LASF310:
 	.string	"_ZNKSs5rfindEcm"
@@ -28051,6 +28455,8 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"cross<float, (glm::precision)0u>"
 .LASF298:
 	.string	"data"
+.LASF1238:
+	.string	"Data"
 .LASF68:
 	.string	"_ZNKSt15__exception_ptr13exception_ptr20__cxa_exception_typeEv"
 .LASF907:
@@ -28061,7 +28467,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"find_first_not_of"
 .LASF1093:
 	.string	"_SC_CLOCK_SELECTION"
-.LASF1248:
+.LASF1268:
 	.string	"_Z5getchv"
 .LASF632:
 	.string	"mon_decimal_point"
@@ -28077,7 +28483,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"__compar_fn_t"
 .LASF989:
 	.string	"_SC_SIGQUEUE_MAX"
-.LASF1318:
+.LASF1342:
 	.string	"_ZN3glm6detail5tvec4IfLNS_9precisionE0EEC2ERKS3_"
 .LASF793:
 	.string	"_ZN3glm6detail5tvec4IfLNS_9precisionE0EEaSERKS3_"
@@ -28089,13 +28495,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZNKSs17find_first_not_ofEPKcmm"
 .LASF1007:
 	.string	"_SC_2_LOCALEDEF"
-.LASF1308:
+.LASF1332:
 	.string	"g_color_buffer_data"
 .LASF238:
 	.string	"_ZNSspLEc"
 .LASF1211:
 	.string	"_ZN4Util6Camera9getViewTfEv"
-.LASF1282:
+.LASF1302:
 	.string	"v_minor"
 .LASF35:
 	.string	"overflow_arg_area"
@@ -28121,7 +28527,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"strtoll"
 .LASF801:
 	.string	"_ZNK3glm6detail5tvec3IfLNS_9precisionE0EEixEi"
-.LASF1285:
+.LASF1305:
 	.string	"randColor"
 .LASF1153:
 	.string	"_SC_LEVEL4_CACHE_SIZE"
@@ -28129,7 +28535,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"fwprintf"
 .LASF381:
 	.string	"_S_goodbit"
-.LASF1299:
+.LASF1323:
 	.string	"main"
 .LASF762:
 	.string	"PFNGLUNIFORMMATRIX4FVPROC"
@@ -28143,16 +28549,20 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"int_frac_digits"
 .LASF893:
 	.string	"_ZNK3glm6detail7tmat4x3IfLNS_9precisionE0EE6lengthEv"
-.LASF1353:
+.LASF1250:
+	.string	"NumNext"
+.LASF1377:
 	.string	"__glewBufferData"
 .LASF345:
 	.string	"initializer_list<char>"
 .LASF725:
 	.string	"setvbuf"
-.LASF1385:
+.LASF1409:
 	.string	"_ZN9__gnu_cxx24__numeric_traits_integerIsE5__maxE"
 .LASF371:
 	.string	"_Ios_Fmtflags"
+.LASF1310:
+	.string	"error"
 .LASF645:
 	.string	"int_p_cs_precedes"
 .LASF117:
@@ -28167,7 +28577,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_IO_FILE"
 .LASF436:
 	.string	"_ZSt4sqrtf"
-.LASF1311:
+.LASF1335:
 	.string	"vbo_col"
 .LASF735:
 	.string	"GLenum"
@@ -28187,7 +28597,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"getwchar"
 .LASF33:
 	.string	"gp_offset"
-.LASF1270:
+.LASF1290:
 	.string	"_prefix"
 .LASF204:
 	.string	"crend"
@@ -28197,13 +28607,13 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"_ZN3glm6detail7tmat2x4IfLNS_9precisionE0EEmmEv"
 .LASF1135:
 	.string	"_SC_V6_LPBIG_OFFBIG"
-.LASF1300:
+.LASF1324:
 	.string	"argc"
 .LASF965:
 	.string	"_SC_PRIORITY_SCHEDULING"
 .LASF706:
 	.string	"ferror"
-.LASF1301:
+.LASF1325:
 	.string	"argv"
 .LASF1017:
 	.string	"_SC_PII_INTERNET_STREAM"
@@ -28245,7 +28655,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"iterator_traits<char*>"
 .LASF922:
 	.string	"sqrt<float>"
-.LASF1333:
+.LASF1357:
 	.string	"tanHalfFovy"
 .LASF184:
 	.string	"_ZNSsaSEc"
@@ -28255,7 +28665,7 @@ _ZZNK3glm6detail5tvec4IfLNS_9precisionE0EEixEiE19__PRETTY_FUNCTION__:
 	.string	"wint_t"
 .LASF730:
 	.string	"wctrans_t"
-.LASF1281:
+.LASF1301:
 	.string	"v_major"
 .LASF250:
 	.string	"_ZNSs6assignEOSs"

@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
     Util::Shader shader_color(res_loc, "vtx_color.glsl", "frag_color.glsl");
     Util::Shader shader_texture(res_loc, "vtx_texture.glsl", "frag_texture.glsl");
 
-    Util::Texture IMG_plant(img_loc, "shaggy.bmp");
+    Util::Texture IMG_plant(img_loc, "shaggy-this-isnt-weed.jpg");
     IMG_plant.bind();
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -55,14 +55,20 @@ int main(int argc, char* argv[]) {
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 
     Util::Camera cam;
-    cam.setLocation(glm::vec3(4.0f, 3.0f, 1.0f));
+    cam.setLocation(glm::vec3(0.0f, 1.0f, 3.0f));
     cam.setLookingAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
     // triangle vertex setup
     static const GLfloat g_vertex_buffer_data[] = {
+        // first triangle
         -1.0f, -1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+
+        // second triangle
+        -1.0f, -1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
     };
 
     // triangle color setup
@@ -108,15 +114,14 @@ int main(int argc, char* argv[]) {
     glm::mat4 Model = glm::mat4(1.0f);
     glm::mat4 mvp = Projection * View * Model; // final MVP matrix
 
-    //GLuint MatrixID = shader_color.getUniformLocation("MVP");
-    GLuint MatrixID = shader_texture.getUniformLocation("MVP");
-    GLuint SamplerID = shader_texture.getUniformLocation("TEX");
+    GLuint MatrixID_color = shader_color.getUniformLocation("MVP");
+    GLuint MatrixID       = shader_texture.getUniformLocation("MVP");
+    GLuint SamplerID      = shader_texture.getUniformLocation("TEX");
 
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         vao.bind();
-        //shader_color.bind();
 
         shader_texture.bind();
 
@@ -140,6 +145,8 @@ int main(int argc, char* argv[]) {
         vbo_uv.generateAttribPointer();
 
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        shader_color.bind();
 
         vao.disableAttribute(0);
         vao.disableAttribute(1);

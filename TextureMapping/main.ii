@@ -62864,13 +62864,57 @@ bool TextureLoader::__inited = false;
 GLuint TextureLoader::__texture_handle = 0;
 
 void TextureLoader::load(std::string filename) {
-    if(__inited)
-        __texture_handle = ilutGLLoadImage((char*)filename.c_str());
-    else {
-        std::cerr << "TextureLoader: DevIL not initialized\n";
-        std::cerr << "\tCall TextureLoader::InitIL\n";
+# 43 "/home/joe/Github_Repos/CustomLibs/GL_Utils/TextureLoader.h"
+    ILuint imageID;
+    ilGenImages(1, &imageID);
+    ilBindImage(imageID);
+    ILboolean success = ilLoadImage(filename.c_str());
+
+    if(success) {
+        ILinfo imageInfo;
+        iluGetImageInfo(&imageInfo);
+
+        if(imageInfo.Origin == 0x0602)
+            iluFlipImage();
+
+        success = ilConvertImage(0x1907, 0x1401);
+
+        if(!success) {
+            ILenum error = ilGetError();
+            std::cout << "Image conversion failed: error(" << error << ") " << iluErrorString(error) << std::endl;
+            exit(-1);
+        }
+
+        glGenTextures(1, &__texture_handle);
+        glBindTexture(0x0DE1, __texture_handle);
+
+
+        glTexParameteri(0x0DE1, 0x2802, 0x2900);
+        glTexParameteri(0x0DE1, 0x2803, 0x2900);
+
+
+        glTexParameteri(0x0DE1, 0x2800, 0x2601);
+        glTexParameteri(0x0DE1, 0x2801, 0x2601);
+
+        glTexImage2D(
+                0x0DE1,
+                0,
+                ilGetInteger(0x0DEA),
+                ilGetInteger(0x0DE4),
+                ilGetInteger(0x0DE5),
+                0,
+                ilGetInteger(0x0DEA),
+                0x1401,
+                ilGetData()
+        );
+
+    } else {
+        ILenum error = ilGetError();
+        std::cout << "Image load failed: error(" << error << ") " << iluErrorString(error) << std::endl;
         exit(-1);
     }
+
+    ilDeleteImages(1, &imageID);
 }
 
 void TextureLoader::InitIL(void) {
@@ -63127,7 +63171,7 @@ int main(int argc, char* argv[]) {
     Util::Shader shader_color(res_loc, "vtx_color.glsl", "frag_color.glsl");
     Util::Shader shader_texture(res_loc, "vtx_texture.glsl", "frag_texture.glsl");
 
-    Util::Texture IMG_plant(img_loc, "shaggy.bmp");
+    Util::Texture IMG_plant(img_loc, "shaggy-this-isnt-weed.jpg");
     IMG_plant.bind();
 
     glTexParameterf(0x0DE1, 0x2801, 0x2601);
@@ -63136,7 +63180,7 @@ int main(int argc, char* argv[]) {
     glTexParameteri(0x0DE1,0x2803,0x812F);
 
     Util::Camera cam;
-    cam.setLocation(glm::vec3(4.0f, 3.0f, 1.0f));
+    cam.setLocation(glm::vec3(0.0f, 1.0f, 3.0f));
     cam.setLookingAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
 
