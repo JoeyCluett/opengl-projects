@@ -5,6 +5,7 @@ INC  = -I$(GITHUB_CUSTOM_LIBS)
 LIB  = -lglut -lglfw -lGLEW -lGL -lIL -lILU -lILUT
 BIN  = bin/Debug
 OPTS = -std=c++11
+OPTS += -Wfatal-errors
 
 all: main
 
