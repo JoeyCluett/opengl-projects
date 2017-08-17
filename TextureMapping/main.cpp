@@ -22,11 +22,20 @@
 #include <GL_Utils/Camera.h>   // Camera objects
 #include <GL_Utils/VAO.h>      // VertexArrayObject objects
 #include <GL_Utils/VBO.h>      // VertexBufferObject objects
+#include <GL_Utils/FloatCam.h> // FloatCam objects (floating camera)
+
+// Model(s) in CustomLibs
+#include <GL_Utils/Model/Panel.h>
+#include <MISC/TimeClass.h>
+#include "proj-tool.h"
 
 #define ASPECT_RATIO ((float)window_width/(float)window_height)
 
-const int window_width  = 640;
-const int window_height = 480;
+#define MAP_SCALE_X 26.7734
+#define MAP_SCALE_Y 52.40
+
+const int window_width  = 800;
+const int window_height = 600;
 
 using namespace std;
 
@@ -36,125 +45,103 @@ int main(int argc, char* argv[]) {
     TextureLoader::InitIL(); // allows building of textures later on
 
     glEnable(GL_DEPTH_TEST);
-
     glDepthFunc(GL_LESS);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     string res_loc("../assets/shader/"); // prefix for shaders
+    //Util::Shader shader_texture(res_loc, "vtx_texture.glsl", "frag_texture.glsl");
+    Util::Shader shader_texture(res_loc, "vtx-track-intersect.glsl", "frag-track-intersect.glsl");
+
     string img_loc("../assets/img/");    // prefix for images
+    Util::Texture IMG_grass(  img_loc, "grass-1.jpg");
+    Util::Texture IMG_weed(   img_loc, "shaggy-this-isnt-weed.jpg");
+    Util::Texture IMG_chicken(img_loc, "is-that-chicken.jpg");
+    Util::Texture IMG_os(     img_loc, "os_users_as_seen_by.jpg");
+    Util::Texture IMG_brakes( img_loc, "oil-your-brakes.jpg");
+    Util::Texture IMG_ground( img_loc, "ndsu_map.jpg");
 
-    Util::Shader shader_color(res_loc, "vtx_color.glsl", "frag_color.glsl");
-    Util::Shader shader_texture(res_loc, "vtx_texture.glsl", "frag_texture.glsl");
+    // needed for Model/View/Projection transformation
+    glm::mat4 Projection = glm::perspective(glm::radians(60.0f), ASPECT_RATIO, 0.1f, 100.0f);
 
-    //Util::Texture IMG_plant(img_loc, "shaggy-this-isnt-weed.jpg");
-    Util::Texture IMG_plant(img_loc, "is-that-chicken.jpg");
-    IMG_plant.bind();
+    Util::FloatCam fCamera(
+            glm::vec3(0, 1, 3),
+            6.0,           // movement speed
+            window_width,  // window width
+            window_height, // window height
+            0.11,          // mouse sensitivity
+            window         // ptr to GLFWwindow
+    );
+    fCamera.setOrientation(M_PI, 0.0f);
 
-    Util::Texture IMG_grass(img_loc, "grass-1.jpg");
-
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-
-    Util::Camera cam;
-    cam.setLocation(glm::vec3(1.0f, 0.0f, 3.0f));
-    cam.setLookingAt(glm::vec3(0.0f, 0.0f, 0.0f));
-
-    // triangle vertex setup
-    static const GLfloat g_vertex_buffer_data[] = {
-        // first triangle
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-
-        // second triangle
-        -1.0f, -1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f,
+    GLfloat ndsu_uv[8] = {
+        0.448, 0.315,
+        0.8,   0.315,
+        0.8,   0.805,
+        0.443, 0.803
     };
 
-    // triangle color setup
-    static GLfloat g_color_buffer_data[9]; // one RGB triplet per vertex
-    for(int i = 0; i < 9; i++)
-        g_color_buffer_data[i] = randColor(); // fill with new random colors every time
+    Model::Panel ground_panel;
+    ground_panel.setRotation(M_PI/-2.0f, 1, 0, 0);
+    ground_panel.setTranslation(MAP_SCALE_X/2, 0, MAP_SCALE_Y/2);
+    ground_panel.setScale(MAP_SCALE_X, MAP_SCALE_Y, 1);
+    ground_panel.setShaderTexture(shader_texture, IMG_ground);
+    ground_panel.setUVCoordinates(ndsu_uv);
+    ground_panel.finalize();
 
-    // texture coordinates setup
-    static GLfloat g_uv_buffer_data[12] = {
-        // first triangle
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
+    Model::Panel panel_1;
+    panel_1.setTranslation(0, 0.5, 0.5);
+    panel_1.setShaderTexture(shader_texture, IMG_chicken);
+    panel_1.finalize();
 
-        // second triangle
-        0.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-    };
+    Model::Panel panel_2;
+    panel_2.setRotation(M_PI / 2.0, 0, 1, 0);
+    panel_2.setTranslation(0.5, 0.5, 0);
+    panel_2.setShaderTexture(shader_texture, IMG_weed);
+    panel_2.finalize();
 
-    // give various bits of data to OpenGL
-    Util::VertexArrayObject vao;
-    vao.bind();
-        // position data
-        Util::VertexBufferObject vbo_pos;
-        vbo_pos.bind();
-        vbo_pos.bufferData(g_vertex_buffer_data, 18*sizeof(GLfloat));
-        vbo_pos.setAttribPtrData(0, 3, GL_FLOAT);
+    Model::Panel panel_3;
+    panel_3.setTranslation(0, 0.5, -0.5);
+    panel_3.setShaderTexture(shader_texture, IMG_grass);
+    panel_3.finalize();
 
-        // color data
-        Util::VertexBufferObject vbo_col;
-        vbo_col.bind();
-        vbo_col.bufferData(g_color_buffer_data, 9*sizeof(GLfloat));
-        vbo_col.setAttribPtrData(1, 3, GL_FLOAT);
+    Model::Panel panel_4;
+    panel_4.setRotation(M_PI / -2.0, 0, 1, 0);
+    panel_4.setTranslation(-0.5, 0.5, 0);
+    panel_4.setShaderTexture(shader_texture, IMG_brakes);
+    panel_4.finalize();
 
-        // uv coordinate data
-        Util::VertexBufferObject vbo_uv;
-        vbo_uv.bind();
-        vbo_uv.bufferData(g_uv_buffer_data, 12*sizeof(GLfloat));
-        vbo_uv.setAttribPtrData(2, 2, GL_FLOAT);
-
-    // setup ModelViewProjection matrix
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), ASPECT_RATIO, 0.1f, 100.0f);
-    glm::mat4 View = cam.getViewTf();
-    glm::mat4 Model = glm::mat4(1.0f);
-    glm::mat4 mvp = Projection * View * Model; // final MVP matrix
-
-    GLuint MatrixID       = shader_texture.getUniformLocation("MVP");
-    GLuint SamplerID      = shader_texture.getUniformLocation("TEX");
+    TimeClass tc;
 
     do {
+        glm::vec3 cPos = fCamera.getPosition();
+        glm::vec3 cDir = fCamera.getDirection();
+
+        if(cPos.y > 0.1)
+            fCamera.update((float)tc.getElapsedSecondsUpdate());
+        else
+            fCamera.setPosition(glm::vec3(cPos.x, 0.15, cPos.z));
+
+        glm::vec3 pt_i = Proj_Tools::getIntersect(cPos, cDir);
+
+        ground_panel.setVec4Uniform(glm::vec4(pt_i.x, pt_i.y, pt_i.z, 1), 0);
+
+        glm::mat4 View = fCamera.getTf();
+
+        ground_panel.setViewProjection(View, Projection);
+        panel_1.setViewProjection(View, Projection);
+        panel_2.setViewProjection(View, Projection);
+        panel_3.setViewProjection(View, Projection);
+        panel_4.setViewProjection(View, Projection);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        vao.bind();
+        // render a sphere where the line intersects the ground
 
-        shader_texture.bind();
-
-        // send transformation to the currently bound shader (MVP uniform)
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
-
-        glActiveTexture(GL_TEXTURE0);
-        IMG_plant.bind();
-        glUniform1i(SamplerID, 0);
-
-        vao.enableAttribute(0);
-        vbo_pos.bind();
-        vbo_pos.generateAttribPointer();
-
-        vao.enableAttribute(1);
-        vbo_col.bind();
-        vbo_col.generateAttribPointer();
-
-        vao.enableAttribute(2);
-        vbo_uv.bind();
-        vbo_uv.generateAttribPointer();
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        shader_color.bind();
-
-        vao.disableAttribute(0);
-        vao.disableAttribute(1);
-        vao.disableAttribute(2);
+        ground_panel.render();
+        //panel_1.render();
+        //panel_2.render();
+        //panel_3.render();
+        //panel_4.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

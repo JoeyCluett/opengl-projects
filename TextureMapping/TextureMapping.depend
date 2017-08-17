@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1502756511 source:/home/joe/Github_Repos/opengl-projects/TextureMapping/main.cpp
+1502923279 source:/home/joe/Github_Repos/opengl-projects/TextureMapping/main.cpp
 	<iostream>
 	<string.h>
 	<string>
@@ -14,6 +14,10 @@
 	<GL_Utils/Camera.h>
 	<GL_Utils/VAO.h>
 	<GL_Utils/VBO.h>
+	<GL_Utils/FloatCam.h>
+	<GL_Utils/Model/Panel.h>
+	<MISC/TimeClass.h>
+	"proj-tool.h"
 
 1502766433 source:/home/joey/github/opengl-projects/TextureMapping/main.cpp
 	<iostream>
@@ -30,4 +34,10 @@
 	<GL_Utils/Camera.h>
 	<GL_Utils/VAO.h>
 	<GL_Utils/VBO.h>
+
+1502923579 /home/joe/Github_Repos/opengl-projects/TextureMapping/proj-tool.h
+	<glm/glm.hpp>
+	<glm/gtc/matrix_transform.hpp>
+	<glm/gtx/transform.hpp>
+	<glm/gtx/intersect.hpp>
 
