@@ -97,7 +97,6 @@ int main(int argc, char* argv[]) {
     ground_panel.setUVCoordinates(ndsu_uv);
     ground_panel.finalize();
 
-
     Model::SimpleCube cube_1(10, 10, 10);
     cube_1.applyTranslation(0, 8, 0);
     cube_1.setTranslation(0, 0, 0);
@@ -109,6 +108,7 @@ int main(int argc, char* argv[]) {
 
     TimeClass tc;
 
+
     do {
         glm::vec3 cPos = fCamera.getPosition();
         glm::vec3 cDir = fCamera.getDirection();
@@ -116,17 +116,17 @@ int main(int argc, char* argv[]) {
         double delta_time = tc.getElapsedSecondsUpdate();
         static double cube_rot = 0.0;
         cube_rot += delta_time;
-        cube_1.setRotation(cube_rot, 1, 0, 0);
+        cube_1.setRotation(cube_rot, 1, 0.5, 0);
 
         if(cPos.y > 0.1)
             fCamera.update((float)delta_time);
         else
             fCamera.setPosition(glm::vec3(cPos.x, 0.15, cPos.z));
 
-        glm::vec3 pt_i = Proj_Tools::getIntersect(cPos, cDir);
+//        glm::vec3 pt_i = Proj_Tools::getIntersect(cPos, cDir*cPos.y, );
 
-        ground_panel.setVec4Uniform(glm::vec4(pt_i.x, pt_i.y, pt_i.z, 1), 0);
-
+        //ground_panel.setVec4Uniform(glm::vec4(pt_i.x, pt_i.y, pt_i.z, 1), 0);
+        ground_panel.setVec4Uniform(glm::vec4(3, 0, 3, 1), 0);
         glm::mat4 View = fCamera.getTf();
 
         ground_panel.setViewProjection(View, Projection);
